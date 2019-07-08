@@ -6,7 +6,7 @@ By collecting this data rich signal source, we can use this information for task
 The following projects can be found in this repository:
 
 * `./active_sta` - *Active CSI collection (Station)* - Connects to some Access Point (AP) (Router or another ESP32) and sends packet requests (thus receiving CSI packet responses). 
-* `TODO` - *Active CSI collection (AP)* - AP which can be connected to by devices (ESP32, see previous).
+* `./active_ap` - *Active CSI collection (AP)* - AP which can be connected to by devices (ESP32, see previous).
 * `TODO` - *Passive CSI collection* - Collects ambient CSI packets (promiscuous mode) without formally requesting.
 
 Each project automatically sends the collected CSI data to both serial port and SD card (if present). 
