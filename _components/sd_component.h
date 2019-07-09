@@ -39,6 +39,7 @@ char *_sd_pick_next_file() {
 }
 
 void sd_init() {
+#ifdef CONFIG_SEND_CSI_TO_SD
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
     slot_config.gpio_miso = PIN_NUM_MISO;
@@ -74,20 +75,25 @@ void sd_init() {
         char *filename = _sd_pick_next_file();
         f = fopen(filename, "a+");
     }
+#endif
 }
 
 /*
- * Printf for both serial AND sd card
+ * Printf for both serial AND sd card (if available and configured)
  */
 void outprintf(const char *format, ...) {
     va_list args;
     va_start(args, format);
 
+#ifdef CONFIG_SEND_CSI_TO_SERIAL
     vprintf(format, args);
+#endif
 
+#ifdef CONFIG_SEND_CSI_TO_SD
     if (f != NULL) {
         vfprintf(f, format, args);
     }
+#endif
 
     va_end(args);
 }

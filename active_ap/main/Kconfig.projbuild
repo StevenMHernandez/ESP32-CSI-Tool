@@ -1,4 +1,4 @@
-menu "Wi-Fi Connection Configuration"
+menu "ESP32 CSI Tool Config"
 
     config ESP_WIFI_SSID
         string "WiFi SSID"
@@ -11,4 +11,19 @@ menu "Wi-Fi Connection Configuration"
         default "mypassword"
         help
             WiFi password (WPA or WPA2) for the example to use.
+
+    config SEND_CSI_TO_SERIAL
+        bool "Send CSI data to Serial"
+        default "y"
+        help
+            Sending data through serial (to a computer) can take time and buffer space.
+            If you are storing to an SD card, it may be useful to deselect this option.
+
+    config SEND_CSI_TO_SD
+        bool "Send CSI data to SD"
+        default "y"
+        help
+            Sending data to an SD card can take time and buffer space.
+            If your ESP32 does not have an SD card, there is no reason to keep this behaviour.
+            If you do though, the program will be recognize this and not attempt writing to the SD card.
 endmenu

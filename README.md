@@ -54,8 +54,7 @@ The following configurations are important for this project:
 3. `Serial flasher config > 'make monitor' baud rate > 921600 baud` This allows more data to be transmitted on the Serial port (this needs to be set in 3 places total)
 4. `Component config > Common ESP-related > UART console baud rate > 921600` This allows more data to be transmitted on the Serial port (this needs to be set in 3 places total)
 5. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
-6. `Wi-Fi Connection Configuration > WiFi SSID`
-6. `Wi-Fi Connection Configuration > WiFi Password`
+6. `ESP32 CSI Tool Config > ****` all options in this menu can be specified per your experiment requirements.
 
 ## Flash ESP32
 
