@@ -116,6 +116,6 @@ void app_main() {
     nvs_init();
     sd_init();
     station_init();
-    csi_init();
+    csi_init("STA");
     station_loop();
 }

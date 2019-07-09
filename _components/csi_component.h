@@ -1,13 +1,15 @@
 #ifndef ESP32_CSI_CSI_COMPONENT_H
 #define ESP32_CSI_CSI_COMPONENT_H
 
+char *project_type;
+
 void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     wifi_csi_info_t d = data[0];
     char mac[20] = {0};
     sprintf(mac, "%02X:%02X:%02X:%02X:%02X:%02X", d.mac[0], d.mac[1], d.mac[2], d.mac[3], d.mac[4], d.mac[5]);
 
     outprintf("CSI_DATA,");
-    outprintf("STA,");
+    outprintf("%s,", project_type);
     outprintf("%s,", mac);
 
     // https://github.com/espressif/esp-idf/blob/9d0ca60398481a44861542638cfdc1949bb6f312/components/esp_wifi/include/esp_wifi_types.h#L314
@@ -45,7 +47,9 @@ void _print_csi_csv_header() {
     outprintf(header_str);
 }
 
-void csi_init() {
+void csi_init(char *type) {
+    project_type = type;
+
     ESP_ERROR_CHECK(esp_wifi_set_csi(1));
 
     // @See: https://github.com/espressif/esp-idf/blob/master/components/esp_wifi/include/esp_wifi_types.h#L401

@@ -129,6 +129,6 @@ void app_main() {
     nvs_init();
     sd_init();
     softap_init();
-    csi_init();
+    csi_init("AP");
     webserver_init();
 }
