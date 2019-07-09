@@ -39,7 +39,7 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
         outprintf("%d ", my_ptr[i]);
     }
     outprintf("\n");
-    fflush(f);
+    sd_flush();
 }
 
 void _print_csi_csv_header() {

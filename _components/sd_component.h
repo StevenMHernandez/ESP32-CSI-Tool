@@ -18,9 +18,9 @@
 #define PIN_NUM_CS   13
 
 FILE *f;
-char filename[10] = {0};
+char filename[16] = {0};
 
-char *_sd_pick_next_file() {
+void _sd_pick_next_file() {
     int i = -1;
     struct stat st;
     while (true) {
@@ -34,8 +34,6 @@ char *_sd_pick_next_file() {
 
         printf("File size: %li\n", st.st_size);
     }
-
-    return filename;
 }
 
 void sd_init() {
@@ -72,8 +70,8 @@ void sd_init() {
     } else {
         sdmmc_card_print_info(stdout, card);
 
-        char *filename = _sd_pick_next_file();
-        f = fopen(filename, "a+");
+        _sd_pick_next_file();
+        f = fopen(filename, "a");
     }
 #endif
 }
@@ -96,6 +94,14 @@ void outprintf(const char *format, ...) {
 #endif
 
     va_end(args);
+}
+
+void sd_flush() {
+#ifdef CONFIG_SEND_CSI_TO_SD
+    fflush(f);
+    fclose(f);
+    f = fopen(filename, "a");
+#endif
 }
 
 #endif //ESP32_CSI_SD_COMPONENT_H
