@@ -45,11 +45,13 @@ esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
         case HTTP_EVENT_ON_DATA:
             ESP_LOGI(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
             if (!esp_http_client_is_chunked_response(evt->client)) {
-                char *data = malloc(evt->data_len + 1);
-                strncpy(data, evt->data, evt->data_len);
-                data[evt->data_len + 1] = '\0';
-                time_set(data);
-                free(data);
+                if (!real_time_set) {
+                    char *data = malloc(evt->data_len + 1);
+                    strncpy(data, evt->data, evt->data_len);
+                    data[evt->data_len + 1] = '\0';
+                    time_set(data);
+                    free(data);
+                }
             }
             break;
         default:
