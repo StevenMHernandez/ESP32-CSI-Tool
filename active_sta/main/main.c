@@ -16,6 +16,8 @@
 #include "nvs_component.h"
 #include "sd_component.h"
 #include "csi_component.h"
+#include "time_component.h"
+#include "input_component.h"
 
 /*
  * The examples use WiFi configuration that you can set via 'make menuconfig'.
@@ -39,14 +41,31 @@ static const char *TAG = "Active CSI collection (Station)";
 static int s_retry_num = 0;
 
 esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
+    switch (evt->event_id) {
+        case HTTP_EVENT_ON_DATA:
+            ESP_LOGI(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
+            if (!esp_http_client_is_chunked_response(evt->client)) {
+                char *data = malloc(evt->data_len + 1);
+                strncpy(data, evt->data, evt->data_len);
+                data[evt->data_len + 1] = '\0';
+                time_set(data);
+                free(data);
+            }
+            break;
+        default:
+            break;
+    }
     return ESP_OK;
 }
 
 esp_http_client_config_t config = {
-        .url = "https://192.168.4.1:80",
+        .url = "http://192.168.4.1:80",
         .event_handler = _http_event_handle,
-        .is_async = true,
+//        .is_async = true, // this option allows for much higher packet rates, but requires https.
 };
+
+//// en_sys_seq: see https://github.com/espressif/esp-idf/blob/master/docs/api-guides/wifi.rst#wi-fi-80211-packet-send for details
+//esp_err_t esp_wifi_80211_tx(wifi_interface_t ifx, const void *buffer, int len, bool en_sys_seq);
 
 static esp_err_t event_handler(void *ctx, system_event_t *event) {
     switch (event->event_id) {
@@ -109,6 +128,8 @@ void station_loop() {
         esp_http_client_perform(client);
 
         esp_http_client_cleanup(client);
+
+        input_check();
     }
 }
 

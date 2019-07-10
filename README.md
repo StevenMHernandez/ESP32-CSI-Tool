@@ -89,7 +89,21 @@ make monitor | python ./_utils/serial_append_time.py > my-experiment-file.csv
 
 Once data has been collected, we now wish to run analysis and most likely apply deep learning algorithms on the collected data. 
 Luckily, the output from the esp32 is a simple CSV file, thus we can pass the contents to any available CSV parser in our language of choice (Python, MATLAB, R, etc.). 
-The use of CSV was selected for its simplicity and small size when compared with the likes of XML or JSON. 
+The use of CSV was selected for its simplicity and small size when compared with the likes of XML or JSON.
+
+## Additional information:
+
+### Setting Local Time
+
+Because the ESP32 is not connected to the internet as a whole, it is not possible to automatically set the clock time locally.
+To handle this, we offer the ability to set the time in a couple of different ways.
+
+First, while running `make monitor` we can type the following `SETTIME: 123123123123` then `ENTER` where the number 123123123123 indicates the current time in seconds.
+
+Additionally, the access point code in `./active_ap` will automatically send its current timestamp to any connected station running the `./active_sta` sub-project.
+This means that you only need to set the time for the access point and all other nodes will synchronize automatically.
+
+Finally, the simplest method is to simply run the output of `make monitor` through a utility function which appends the correct timestamp to the output when received on your computer as described in the **Collecting CSI Data* section above.
 
 ## Previous Works
 

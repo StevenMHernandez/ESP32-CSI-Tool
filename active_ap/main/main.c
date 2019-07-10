@@ -16,6 +16,8 @@
 #include "nvs_component.h"
 #include "sd_component.h"
 #include "csi_component.h"
+#include "time_component.h"
+#include "input_component.h"
 
 /*
  * The examples use WiFi configuration that you can set via 'make menuconfig'.
@@ -84,7 +86,6 @@ void softap_init() {
 }
 
 void free_ctx_func(void *ctx) {
-    /* Could be something other than free */
     free(ctx);
 }
 
@@ -94,9 +95,10 @@ esp_err_t get_handler(httpd_req_t *req) {
         req->free_ctx = free_ctx_func;
     }
 
-    /* Send a simple empty response */
-    const char resp[] = "OK";
+    /* Send the current (local) timestamp */
+    char* resp = time_string_get();
     httpd_resp_send(req, resp, strlen(resp));
+    free(resp);
 
     return ESP_OK;
 }
@@ -131,4 +133,5 @@ void app_main() {
     softap_init();
     csi_init("AP");
     webserver_init();
+    input_loop();
 }

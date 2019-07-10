@@ -1,6 +1,8 @@
 #ifndef ESP32_CSI_CSI_COMPONENT_H
 #define ESP32_CSI_CSI_COMPONENT_H
 
+#include "time_component.h"
+
 char *project_type;
 
 void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
@@ -33,6 +35,11 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     outprintf("%d,", d.rx_ctrl.sig_len);
     outprintf("%d,", d.rx_ctrl.rx_state);
 
+    char* resp = time_string_get();
+    outprintf("%d,", real_time_set);
+    outprintf("%s,", resp);
+    free(resp);
+
     outprintf("%d,", data->len);
     int8_t *my_ptr = data->buf;
     for (int i = 0; i < 128; i++) {
@@ -43,7 +50,7 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
 }
 
 void _print_csi_csv_header() {
-    char *header_str = "type,role,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,timestamp,ant,sig_len,rx_state,len,CSI_DATA\n";
+    char *header_str = "type,role,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,real_time_set,real_timestamp,len,CSI_DATA\n";
     outprintf(header_str);
 }
 
