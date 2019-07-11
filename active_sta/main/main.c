@@ -61,13 +61,13 @@ esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
 }
 
 esp_http_client_config_t config = {
-        .url = "http://192.168.4.1:80",
+        .url = "https://192.168.4.1:80",
         .event_handler = _http_event_handle,
-//        .is_async = true, // this option allows for much higher packet rates, but requires https.
+        .is_async = true, // this option allows for much higher packet rates, but requires https.
 };
 
 //// en_sys_seq: see https://github.com/espressif/esp-idf/blob/master/docs/api-guides/wifi.rst#wi-fi-80211-packet-send for details
-//esp_err_t esp_wifi_80211_tx(wifi_interface_t ifx, const void *buffer, int len, bool en_sys_seq);
+esp_err_t esp_wifi_80211_tx(wifi_interface_t ifx, const void *buffer, int len, bool en_sys_seq);
 
 static esp_err_t event_handler(void *ctx, system_event_t *event) {
     switch (event->event_id) {
@@ -132,6 +132,8 @@ void station_loop() {
         esp_http_client_cleanup(client);
 
         input_check();
+
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 }
 

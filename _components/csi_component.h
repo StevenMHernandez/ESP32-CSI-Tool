@@ -40,12 +40,12 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     outprintf("%s,", resp);
     free(resp);
 
-    outprintf("%d,", data->len);
+    outprintf("%d,[", data->len);
     int8_t *my_ptr = data->buf;
     for (int i = 0; i < 128; i++) {
         outprintf("%d ", my_ptr[i]);
     }
-    outprintf("\n");
+    outprintf("]\n");
     sd_flush();
 }
 
