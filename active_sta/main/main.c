@@ -133,7 +133,7 @@ void station_loop() {
 
         input_check();
 
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 }
 
