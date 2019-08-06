@@ -43,7 +43,8 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     outprintf("%d,[", data->len);
     int8_t *my_ptr = data->buf;
     for (int i = 0; i < 128; i++) {
-        outprintf("%d ", (uint8_t) my_ptr[i]);
+        outprintf("%d ", my_ptr[i]);
+//        outprintf("%d ", (uint8_t) my_ptr[i]);
 //        outprintf("%02x", (uint8_t) my_ptr[i]);
     }
     outprintf("]\n");
@@ -58,7 +59,7 @@ void _print_csi_csv_header() {
 void csi_init(char *type) {
     project_type = type;
 
-#if SHOULD_COLLECT_CSI
+#ifdef CONFIG_SHOULD_COLLECT_CSI
     ESP_ERROR_CHECK(esp_wifi_set_csi(1));
 
     // @See: https://github.com/espressif/esp-idf/blob/master/components/esp_wifi/include/esp_wifi_types.h#L401
