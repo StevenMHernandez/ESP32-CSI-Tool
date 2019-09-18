@@ -7,7 +7,6 @@ The following projects can be found in this repository:
 
 * `./active_sta` - *Active CSI collection (Station)* - Connects to some Access Point (AP) (Router or another ESP32) and sends packet requests (thus receiving CSI packet responses). 
 * `./active_ap` - *Active CSI collection (AP)* - AP which can be connected to by devices (ESP32, see previous).
-* `TODO` - *Passive CSI collection* - Collects ambient CSI packets (promiscuous mode) without formally requesting.
 
 Each project automatically sends the collected CSI data to both serial port and SD card (if present). 
 These settings can be configured as described below. 
@@ -21,7 +20,7 @@ First, Install Espressif IoT Development Framework (ESP-IDF) by following their 
 Next, clone this repository:
 
 ```
-git clone https://github.com/StevenMHernandez/esp32-csi
+git clone https://github.com/StevenMHernandez/esp32-csi-tool
 ```
 
 Finally, decide which sub-project you would like to flash to your ESP32(s). 
@@ -30,7 +29,9 @@ One using the *Active CSI collection (Station)* codebase and the other using the
 To begin working with a given codebase, open a terminal and change into the respective directory.
 
 ```
-cd DIR/TO/CODEBASE
+cd ./active_sta # For Active Station
+# OR
+cs ./active_ap # For Active Access Point
 ```
 
 We can now begin configuring and flashing your ESP32.
@@ -49,10 +50,10 @@ So for example, make sure when you change the Wi-Fi password in *Active CSI coll
 
 The following configurations are important for this project:
 
-1. `Serial flasher config > Default serial port` This port may not be correct if you have multiple ESP32s connected to your computer. Find you port by running the following comment: `ls /dev/cu.*` while the ESP32 is connected. The port will look something like the following: **/dev/cu.SLAB_USBtoUART**
-2. `Serial flasher config > Default baud rate > 921600 baud` This allows more data to be transmitted on the Serial port (this needs to be set in 3 places total)
-3. `Serial flasher config > 'make monitor' baud rate > 921600 baud` This allows more data to be transmitted on the Serial port (this needs to be set in 3 places total)
-4. `Component config > Common ESP-related > UART console baud rate > 921600` This allows more data to be transmitted on the Serial port (this needs to be set in 3 places total)
+1. `Serial flasher config > Default serial port` This port may not be correct if you have multiple ESP32s connected to your computer. Find the port by running the following comment: `ls /dev/cu.*` while the ESP32 is connected. The port should look something like the following: **/dev/cu.SLAB_USBtoUART**
+2. `Serial flasher config > Default baud rate > 921600 baud` This allows more data to be transmitted on the Serial port
+3. `Serial flasher config > 'make monitor' baud rate > 921600 baud`
+4. `Component config > Common ESP-related > UART console baud rate > 921600`
 5. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
 6. `ESP32 CSI Tool Config > ****` all options in this menu can be specified per your experiment requirements.
 
@@ -64,22 +65,22 @@ Run the following command from within one of the sub-project's directories.
 make flash monitor
 ```
 
-This will flash the ESP32 and once completed, will print the data transmitted from the ESP32 through the serial port. 
+This will flash the ESP32 and once completed, will print incoming data from the freshly programmed ESP32's serial port. 
 To exit monitoring, use `ctrl+]`
 
 ## Collecting CSI Data
 
 There are two methods to collect CSI data. 
-If your ESP32 has an SD card on board (such as the TTGO T8 V1.7 ESP32), the program will automatically detect this SD card and output CSI data to a simple csv file.
+If your ESP32 has an SD card on board (such as the TTGO T8 V1.7 ESP32), the ESP32 will automatically detect the SD card and automaticaly output CSI data to a simple csv file.
 
-If the device does not have an SD card or you wish to collect the data directly from the Serial port, you can run the following command:
+If the device does not have an SD card or you wish to collect the data directly from the Serial port on your computer, you can run the following command:
 
 ```
 make monitor | grep "CSI_DATA" > my-experiment-file.csv 
 ```
 
 Because the clocks on the ESP32 are not synchronized with any real world time, it can be difficult to sync this data with other external data sources or sensors. 
-To help us with this, we can pass output first through a python script which appends a timestamp from your computer.
+To help with this, we can pass output first through a python script which appends a timestamp from your computer.
 
 ```
 make monitor | python ./_utils/serial_append_time.py > my-experiment-file.csv
@@ -87,7 +88,7 @@ make monitor | python ./_utils/serial_append_time.py > my-experiment-file.csv
 
 ## Analysing CSI Data
 
-Once data has been collected, we now wish to run analysis and most likely apply deep learning algorithms on the collected data. 
+Once data has been collected, we now wish to run analysis and (most likely) apply deep learning algorithms on the collected data. 
 Luckily, the output from the esp32 is a simple CSV file, thus we can pass the contents to any available CSV parser in our language of choice (Python, MATLAB, R, etc.). 
 The use of CSV was selected for its simplicity and small size when compared with the likes of XML or JSON.
 
@@ -98,7 +99,7 @@ The use of CSV was selected for its simplicity and small size when compared with
 Because the ESP32 is not connected to the internet as a whole, it is not possible to automatically set the clock time locally.
 To handle this, we offer the ability to set the time in a couple of different ways.
 
-First, while running `make monitor` we can type the following `SETTIME: 123123123123` then `ENTER` where the number 123123123123 indicates the current time in seconds.
+First, while running `make monitor` we can type the following `SETTIME: 123123123123` then `ENTER` where the number 123123123123 indicates the current UNIX time in seconds.
 
 Additionally, the access point code in `./active_ap` will automatically send its current timestamp to any connected station running the `./active_sta` sub-project.
 This means that you only need to set the time for the access point and all other nodes will synchronize automatically.
@@ -115,4 +116,3 @@ This work on the other hand hopes to create a simple system for researchers to c
 [Atheros CSI Tool](https://wands.sg/research/wifi/AtherosCSI/) is very similar targeting Atheros NICs. 
 These tools are useful in collecting CSI packet data with hardware available on hand, but are limited in their capacity by their reliance on keeping the NICs to a computer or laptop. 
 This limitation results in much larger size for a CSI-collecting unit as well as increases in the cost per unit. 
-
