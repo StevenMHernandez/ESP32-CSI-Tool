@@ -19,6 +19,17 @@
 #include "time_component.h"
 #include "input_component.h"
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <time.h>
+
 /*
  * The examples use WiFi configuration that you can set via 'make menuconfig'.
  *
@@ -70,7 +81,7 @@ void softap_init() {
             .ap = {
                     .ssid = EXAMPLE_ESP_WIFI_SSID,
                     .password = EXAMPLE_ESP_WIFI_PASS,
-                    .max_connection = EXAMPLE_MAX_STA_CONN,
+                    .max_connection = 1, //EXAMPLE_MAX_STA_CONN,
                     .authmode = WIFI_AUTH_WPA_WPA2_PSK
             },
     };
@@ -127,11 +138,82 @@ httpd_handle_t webserver_init(void) {
     return server;
 }
 
+int server, client;
+#define NUM_RECV 101
+char input[NUM_RECV + 1];
+
+void webserver_loop() {
+    uint32_t inet_len;
+    struct sockaddr_in saddr, caddr;
+
+    saddr.sin_family = AF_INET;
+    saddr.sin_port = htons(2223);
+    saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    server = socket(PF_INET, SOCK_STREAM, 0);
+    if (server == -1) {
+        printf("Socket creation error\n");
+        return;
+    }
+
+    if (bind(server, (struct sockaddr *)&saddr, sizeof(struct sockaddr)) == -1) {
+        printf("Socket bind error\n");
+        return;
+    }
+
+    if (listen(server,5) == -1) {
+        printf("Socket listen error\n");
+        return;
+    }
+
+    while (1) {
+        inet_len = sizeof(caddr);
+        if ((client = accept(server, (struct sockaddr *)&caddr, &inet_len)) == -1) {
+            printf("Client accept error\n");
+            close(server);
+            return;
+        }
+        printf("server new client connection [%s/%d]\n", inet_ntoa(caddr.sin_addr), caddr.sin_port);
+
+        while (1) { // CONNECTED!?!?!?
+            int count = read(client, &input, NUM_RECV);
+//            input[count] = '\0';
+//            printf("received a value of [%s]\n", input);
+        }
+
+//        // check if file exists
+//        // @SEE http://stackoverflow.com/a/230068
+//        value = ntohl(access(input, F_OK) != -1);
+
+//        if (write(client, &value, sizeof(value)) != sizeof(value)) {
+//            printf("Client accept error\n");
+//            close(server);
+//            return(-1);
+//        }
+//
+//        if (htonl(value) == FILE_EXISTS) {
+//            printf("File exists, starting transfer\n");
+//            FILE *file = fopen(input, "r+");
+//            while (fgets(input, 50, file) != NULL) {
+//                write(client, &input, 50);
+//            }
+//            strcpy(input, "cmsc257");
+//            write(client, &input, 50);
+//            printf("Transfer complete\n\n");
+//        } else {
+//            printf("File does not exists, closing.\n\n");
+//        }
+
+//        close(client);
+    }
+}
+
 void app_main() {
     nvs_init();
-    sd_init();
+//    sd_init();
     softap_init();
     csi_init("AP");
-    webserver_init();
-    input_loop();
+//    webserver_init();
+//    input_loop();
+    webserver_loop();
 }

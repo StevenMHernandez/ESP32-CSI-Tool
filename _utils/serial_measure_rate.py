@@ -37,9 +37,12 @@ while True:
         if time.time() - interval_start_time > 1.0:
             number_of_intervals += 1
             if number_of_intervals > 0:
+                neg_index = line.find("-")
+                rssi = line[neg_index:neg_index+4]
                 print("Packet Count:", packet_count, "per second",
                       "Average of", total_packet_counts / number_of_intervals, "packets per second",
-                      "Time:", time.time())
+                      "Time:", time.time(),
+                      "RSSI:", rssi)
                 interval_start_time = time.time()
                 packet_count = 0
         packet_count += 1
