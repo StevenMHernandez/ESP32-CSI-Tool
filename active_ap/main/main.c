@@ -5,6 +5,7 @@
 #include "esp_spi_flash.h"
 #include "freertos/event_groups.h"
 #include "esp_wifi.h"
+#include "esp_wifi_internal.h"
 #include "esp_event_loop.h"
 #include "esp_http_server.h"
 #include "esp_log.h"
@@ -87,6 +88,8 @@ void softap_init() {
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
+    esp_wifi_set_ps(WIFI_PS_NONE);
+
     ESP_LOGI(TAG, "softap_init finished. SSID:%s password:%s", EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
 }
 
@@ -138,14 +141,15 @@ int get_num_clients() {
 
 void app_main() {
     nvs_init();
+
 //    sd_init();
     softap_init();
     csi_init("AP");
 //    webserver_init();
 //    input_loop();
 //    webserver_loop();
-//    socket_listener_loop();
-    socket_transmitter_ap_loop(&get_num_clients);
+    socket_listener_loop();
+//    socket_transmitter_ap_loop(&get_num_clients);
 //    socket_transmitter_ap_loop_multi_sta(&get_num_clients); // Working is?
 //    socket_multi_transmitter_ap_loop(&get_num_clients);
 }

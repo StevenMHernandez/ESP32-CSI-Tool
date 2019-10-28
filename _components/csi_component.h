@@ -46,7 +46,7 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
         outprintf("%d ", my_ptr[i]);
 //        outprintf("%d ", (uint8_t) my_ptr[i]);
 //        outprintf("%02x", (uint8_t) my_ptr[i]);
-    }
+}
     outprintf("]");
     outprintf("\n");
     sd_flush();

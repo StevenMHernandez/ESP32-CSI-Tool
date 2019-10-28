@@ -8,112 +8,122 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "freertos/event_groups.h"
+#include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
-#include "esp_http_server.h"
+#include <esp_http_server.h>
+#include <esp_wifi_internal.h>
 
 int server, client;
-#define NUM_RECV 101
-char input[NUM_RECV + 1];
+#define NUM_RECV 2
+char recv_buf[NUM_RECV + 1];
 
 void socket_listener_loop() {
-    uint32_t inet_len;
-    struct sockaddr_in saddr, caddr;
-
-    saddr.sin_family = AF_INET;
-    saddr.sin_port = htons(2223);
-    saddr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-    server = socket(PF_INET, SOCK_STREAM, 0);
-    if (server == -1) {
-        printf("Socket creation error\n");
-        return;
-    }
-
-    if (bind(server, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) == -1) {
-        printf("Socket bind error\n");
-        return;
-    }
-
-    if (listen(server, 5) == -1) {
-        printf("Socket listen error\n");
-        return;
-    }
-
+    int server = -1;
     while (1) {
+        close(server);
+        uint32_t inet_len;
+        struct sockaddr_in saddr, caddr;
+
+        saddr.sin_family = AF_INET;
+        saddr.sin_port = htons(2223);
+        saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+        server = socket(PF_INET, SOCK_DGRAM, 0);  // SOCK_RAW?
+        printf("socket: %i\n", server);
+        if (server == -1) {
+            printf("Socket creation error\n");
+            continue;
+        }
+
+        if (bind(server, (struct sockaddr *) &saddr, sizeof(struct sockaddr)) == -1) {
+            printf("Socket bind error\n");
+            continue;
+        }
+
+        if (listen(server, 5) == -1) {
+            printf("Socket listen error\n");
+            printf("ERROR: Socket listen error [%s]\n", strerror(errno));
+            vTaskDelay(10 / portTICK_PERIOD_MS);
+            continue;
+        }
+
         inet_len = sizeof(caddr);
         if ((client = accept(server, (struct sockaddr *) &caddr, &inet_len)) == -1) {
             printf("Client accept error\n");
             close(server);
-            return;
+            continue;
         }
         printf("server new client connection [%s/%d]\n", inet_ntoa(caddr.sin_addr), caddr.sin_port);
 
         while (1) {
-            read(client, &input, NUM_RECV);
-            printf("read\n");
+            read(client, &recv_buf, NUM_RECV);
+            vTaskDelay(1 / portTICK_PERIOD_MS);
         }
     }
 }
 
+char *input = "1\n"; // 11
+
 void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
     int socket_fd = -1;
     while (1) {
-        if (socket_fd != -1) {
-            close(socket_fd);
-        }
+        close(socket_fd);
         char *ip = "192.168.4.1";
         struct sockaddr_in caddr;
         caddr.sin_family = AF_INET;
         caddr.sin_port = htons(2223);
-        if (inet_aton(ip, &caddr.sin_addr) == 0) {
-            continue;
-        }
         while (!is_wifi_connected()) {
             // wait until connected to AP
             printf("waiting\n");
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+        }
+        if (inet_aton(ip, &caddr.sin_addr) == 0) {
+            printf("ERROR: inet_aton\n");
+            continue;
         }
 
-        socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+        socket_fd = socket(PF_INET, SOCK_DGRAM, 0);
         if (socket_fd == -1) {
-            printf("Socket creation error [%s]\n", strerror(errno));
+            printf("ERROR: Socket creation error [%s]\n", strerror(errno));
             continue;
         }
         if (connect(socket_fd, (const struct sockaddr *) &caddr, sizeof(struct sockaddr)) == -1) {
-            printf("socket connection error [%s]\n", strerror(errno));
+            printf("ERROR: socket connection error [%s]\n", strerror(errno));
             continue;
         }
 
         while (1) {
             if (!is_wifi_connected()) {
-                continue;
+                printf("ERROR: wifi is not connected\n");
+                break;
             }
 
-            printf("writing\n");
-            char *input = "000000000000000000000000000000000000000000000000000000000000000000000000000\n"; // 75
-            if (write(socket_fd, &input, strlen(input)) != strlen(input)) {
-                printf("error writing network data [%s]\n", strerror(errno));
-                continue;
+            if (!esp_wifi_internal_tx_is_stop()) {
+                printf("writing\n");
+                vTaskDelay(1 / portTICK_PERIOD_MS);
+
+                if (sendto(socket_fd, &input, strlen(input), 0, &caddr, sizeof(caddr)) != strlen(input)) {
+                    printf("ERROR: failed writing network data [%s]\n", strerror(errno));
+                    vTaskDelay(10 / portTICK_PERIOD_MS);
+                    continue;
+                }
             }
         }
-
-        close(socket_fd);
-
-        printf("done.");
     }
 }
 
 void socket_transmitter_ap_loop(int (*get_num_clients)()) {
     while (1) {
+        close(socket_fd);
         printf("loop\n");
         char *ip = "192.168.4.2";
-        int socket_fd;
         struct sockaddr_in caddr;
         caddr.sin_family = AF_INET;
         caddr.sin_port = htons(2223);
         if (inet_aton(ip, &caddr.sin_addr) == 0) {
-            return;
+            continue;
         }
         while (!get_num_clients()) {
             // wait until connected to AP
@@ -123,11 +133,11 @@ void socket_transmitter_ap_loop(int (*get_num_clients)()) {
         socket_fd = socket(PF_INET, SOCK_STREAM, 0);
         if (socket_fd == -1) {
             printf("Socket creation error [%s]\n", strerror(errno));
-            return;
+            continue;
         }
         if (connect(socket_fd, (const struct sockaddr *) &caddr, sizeof(struct sockaddr)) == -1) {
             printf("socket connection error [%s]\n", strerror(errno));
-            return;
+            continue;
         }
 
         while (1) {
@@ -139,13 +149,9 @@ void socket_transmitter_ap_loop(int (*get_num_clients)()) {
             printf("writing\n");
             if (write(socket_fd, &input, strlen(input)) != strlen(input)) {
                 printf("error writing network data [%s]\n", strerror(errno));
-                break;
+                continue;
             }
         }
-
-        close(socket_fd);
-
-        printf("done.");
     }
 }
 
@@ -169,7 +175,7 @@ int get_index_for(ip4_addr_t ip) {
 
 void socket_transmitter_ap_loop_multi_sta(int (*get_num_clients)()) {
     socket_fd = (int *) malloc(sizeof(int *) * 10);
-    ip4_addr_t_fd = (ip4_addr_t *) malloc(sizeof(ip4_addr_t *) * 10);
+    ip4_addr_t_fd = (ip4_addr_t *) malloc(sizeof(ip4_addr_t * ) * 10);
 
     while (1) {
         printf("loop (%i)\n", get_num_clients());
@@ -209,8 +215,6 @@ void socket_transmitter_ap_loop_multi_sta(int (*get_num_clients)()) {
         }
 
         for (int i = 0; i < tcpip_sta_list.num; i++) {
-
-            char *input = "000000000000000000000000000000000000000000000000000000000000000000000000000\n"; // 75
             printf("writing\n");
             if (write(socket_fd[i], &input, strlen(input)) != strlen(input)) {
                 printf("error writing network data [%s]\n", strerror(errno));

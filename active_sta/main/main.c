@@ -5,6 +5,7 @@
 #include "esp_spi_flash.h"
 #include "freertos/event_groups.h"
 #include "esp_wifi.h"
+#include <esp_wifi_internal.h>
 #include "esp_event_loop.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
@@ -110,6 +111,7 @@ void station_init() {
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
+
     ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL));
 
     wifi_config_t wifi_config = {
@@ -123,6 +125,8 @@ void station_init() {
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
+    esp_wifi_set_ps(WIFI_PS_NONE);
+
     ESP_LOGI(TAG, "connect to ap SSID:%s password:%s", EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
 }
 
@@ -131,9 +135,7 @@ void app_main() {
     sd_init();
     station_init();
     csi_init("STA");
+
 //    socket_listener_loop();
-    printf("the begin\n");
     socket_transmitter_sta_loop(&is_wifi_connected);
-    printf("the end\n");
-//    socket_listener_loop();
 }
