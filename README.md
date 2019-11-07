@@ -7,6 +7,7 @@ The following projects can be found in this repository:
 
 * `./active_sta` - *Active CSI collection (Station)* - Connects to some Access Point (AP) (Router or another ESP32) and sends packet requests (thus receiving CSI packet responses). 
 * `./active_ap` - *Active CSI collection (AP)* - AP which can be connected to by devices (ESP32, see previous).
+* `./passive` - *Passive CSI collection* - Passively listens for CSI frames on a given channel (default: channel 3).
 
 Each project automatically sends the collected CSI data to both serial port and SD card (if present). 
 These settings can be configured as described below. 
@@ -32,6 +33,8 @@ To begin working with a given codebase, open a terminal and change into the resp
 cd ./active_sta # For Active Station
 # OR
 cs ./active_ap # For Active Access Point
+# OR
+cs ./passive # For Passive CSI collection
 ```
 
 We can now begin configuring and flashing your ESP32.
@@ -105,14 +108,3 @@ Additionally, the access point code in `./active_ap` will automatically send its
 This means that you only need to set the time for the access point and all other nodes will synchronize automatically.
 
 Finally, the simplest method is to simply run the output of `make monitor` through a utility function which appends the correct timestamp to the output when received on your computer as described in the **Collecting CSI Data* section above.
-
-## Previous Works
-
-Jonathan Muller has begun some useful investigation on collecting CSI on the ESP32 [https://github.com/jonathanmuller/ESP32-gather-channel-state-information-CSI-](https://github.com/jonathanmuller/ESP32-gather-channel-state-information-CSI-). 
-Muller's work appears to primarily be concerned with the collection of CSI packets in a general sense for analysis in softwares such as Wireshark. 
-This work on the other hand hopes to create a simple system for researchers to collect CSI packet data for use in tasks such as Wi-Fi Sensing and Device-free Localization. 
-
-[Linux 802.11n CSI Tool](https://dhalperi.github.io/linux-80211n-csitool/) provides a method for researchers to collect CSI packet data from the Intel 5300 Network Interface Card (NIC). 
-[Atheros CSI Tool](https://wands.sg/research/wifi/AtherosCSI/) is very similar targeting Atheros NICs. 
-These tools are useful in collecting CSI packet data with hardware available on hand, but are limited in their capacity by their reliance on keeping the NICs to a computer or laptop. 
-This limitation results in much larger size for a CSI-collecting unit as well as increases in the cost per unit. 
