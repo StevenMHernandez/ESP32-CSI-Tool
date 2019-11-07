@@ -59,7 +59,8 @@ void socket_listener_loop() {
 
         while (1) {
             read(client, &recv_buf, NUM_RECV);
-            vTaskDelay(1 / portTICK_PERIOD_MS);
+            printf("READ_SOMETHING\n");
+            vTaskDelay(10 / portTICK_PERIOD_MS);
         }
     }
 }
@@ -70,7 +71,8 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
     int socket_fd = -1;
     while (1) {
         close(socket_fd);
-        char *ip = "192.168.4.1";
+//        char *ip = "192.168.4.1";
+        char *ip = "172.20.10.1";
         struct sockaddr_in caddr;
         caddr.sin_family = AF_INET;
         caddr.sin_port = htons(2223);
@@ -101,9 +103,6 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
             }
 
             if (!esp_wifi_internal_tx_is_stop()) {
-                printf("writing\n");
-                vTaskDelay(1 / portTICK_PERIOD_MS);
-
                 if (sendto(socket_fd, &input, strlen(input), 0, &caddr, sizeof(caddr)) != strlen(input)) {
                     printf("ERROR: failed writing network data [%s]\n", strerror(errno));
                     vTaskDelay(10 / portTICK_PERIOD_MS);
@@ -115,6 +114,7 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
 }
 
 void socket_transmitter_ap_loop(int (*get_num_clients)()) {
+    int socket_fd = -1;
     while (1) {
         close(socket_fd);
         printf("loop\n");
@@ -130,7 +130,7 @@ void socket_transmitter_ap_loop(int (*get_num_clients)()) {
             printf("waiting\n");
         }
 
-        socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+        socket_fd = socket(PF_INET, SOCK_DGRAM, 0);
         if (socket_fd == -1) {
             printf("Socket creation error [%s]\n", strerror(errno));
             continue;
@@ -198,7 +198,7 @@ void socket_transmitter_ap_loop_multi_sta(int (*get_num_clients)()) {
                         continue;
                     }
 
-                    socket_fd[i] = socket(PF_INET, SOCK_STREAM, 0);
+                    socket_fd[i] = socket(PF_INET, SOCK_DGRAM, 0);
                     if (socket_fd[i] == -1) {
                         printf("SOCKET_ERROR: Socket creation error [%s]\n", strerror(errno));
                         socket_fd[i] = NULL;
@@ -240,7 +240,7 @@ void socket_transmitter_ap_loop_multi_sta(int (*get_num_clients)()) {
 //                    continue;
 //                }
 //
-//                socket_fd[i] = socket(PF_INET, SOCK_STREAM, 0);
+//                socket_fd[i] = socket(PF_INET, SOCK_DGRAM, 0);
 //                if (socket_fd[i] == -1) {
 //                    printf("Socket creation error [%s]\n", strerror(errno));
 //                    continue;

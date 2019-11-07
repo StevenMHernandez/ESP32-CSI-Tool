@@ -118,6 +118,7 @@ void station_init() {
             .sta = {
                     .ssid = EXAMPLE_ESP_WIFI_SSID,
                     .password = EXAMPLE_ESP_WIFI_PASS,
+                    .channel = 3,
             },
     };
 

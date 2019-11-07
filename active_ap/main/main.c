@@ -77,7 +77,8 @@ void softap_init() {
                     .ssid = EXAMPLE_ESP_WIFI_SSID,
                     .password = EXAMPLE_ESP_WIFI_PASS,
                     .max_connection = 8, //EXAMPLE_MAX_STA_CONN,
-                    .authmode = WIFI_AUTH_WPA_WPA2_PSK
+                    .authmode = WIFI_AUTH_WPA_WPA2_PSK,
+                    .channel = 3,
             },
     };
     if (strlen(EXAMPLE_ESP_WIFI_PASS) == 0) {
