@@ -36,7 +36,7 @@ void input_check() {
 void input_loop() {
     while (true) {
         input_check();
-        vTaskDelay(1 / portTICK_PERIOD_MS);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 }
 

@@ -10,11 +10,11 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 
-#include "nvs_component.h"
-#include "sd_component.h"
-#include "csi_component.h"
-#include "time_component.h"
-#include "input_component.h"
+#include "../../_components/nvs_component.h"
+#include "../../_components/sd_component.h"
+#include "../../_components/csi_component.h"
+#include "../../_components/time_component.h"
+#include "../../_components/input_component.h"
 
 static const char *TAG = "Passive CSI collection (AP)";
 
