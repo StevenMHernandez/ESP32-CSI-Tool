@@ -50,6 +50,7 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     outprintf("]");
     outprintf("\n");
     sd_flush();
+    vTaskDelay(10 / portTICK_PERIOD_MS);
 }
 
 void _print_csi_csv_header() {

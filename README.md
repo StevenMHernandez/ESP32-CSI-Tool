@@ -16,7 +16,8 @@ In addition to these ESP32 specific projects, we also consider methods for analy
 
 ## Installation
 
-First, Install Espressif IoT Development Framework (ESP-IDF) by following their [https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html#installation-step-by-step](step by step installation guide). 
+First, Install Espressif IoT Development Framework (ESP-IDF) by following their [https://docs.espressif.com/projects/esp-idf/en/v3.3.1/get-started/index.html](step by step installation guide).
+Notice, this project requires the **current stable version v3.3.1 of ESP-IDF**.
 
 Next, clone this repository:
 

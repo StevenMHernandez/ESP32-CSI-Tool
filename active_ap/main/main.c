@@ -5,7 +5,6 @@
 #include "esp_spi_flash.h"
 #include "freertos/event_groups.h"
 #include "esp_wifi.h"
-#include "esp_wifi_internal.h"
 #include "esp_event_loop.h"
 #include "esp_http_server.h"
 #include "esp_log.h"
@@ -14,12 +13,12 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#include "nvs_component.h"
-#include "sd_component.h"
-#include "csi_component.h"
-#include "time_component.h"
-#include "input_component.h"
-#include "sockets_component.h"
+#include "../../_components/nvs_component.h"
+#include "../../_components/sd_component.h"
+#include "../../_components/csi_component.h"
+#include "../../_components/time_component.h"
+#include "../../_components/input_component.h"
+#include "../../_components/sockets_component.h"
 
 /*
  * The examples use WiFi configuration that you can set via 'make menuconfig'.
@@ -142,15 +141,7 @@ int get_num_clients() {
 
 void app_main() {
     nvs_init();
-
-//    sd_init();
+    sd_init();
     softap_init();
     csi_init("AP");
-//    webserver_init();
-//    input_loop();
-//    webserver_loop();
-    socket_listener_loop();
-//    socket_transmitter_ap_loop(&get_num_clients);
-//    socket_transmitter_ap_loop_multi_sta(&get_num_clients); // Working is?
-//    socket_multi_transmitter_ap_loop(&get_num_clients);
 }

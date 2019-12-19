@@ -18,7 +18,7 @@
 #define PIN_NUM_CS   13
 
 FILE *f;
-char filename[16] = {0};
+char filename[24] = {0};
 
 void _sd_pick_next_file() {
     int i = -1;

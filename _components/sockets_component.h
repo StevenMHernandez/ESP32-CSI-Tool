@@ -18,8 +18,9 @@
 int server, client;
 #define NUM_RECV 2
 char recv_buf[NUM_RECV + 1];
+char *input = "1\n";
 
-void socket_listener_loop() {
+void socket_listener_loop(bool is_sta, bool (*is_wifi_connected)()) {
     int server = -1;
     while (1) {
         close(server);
@@ -29,6 +30,12 @@ void socket_listener_loop() {
         saddr.sin_family = AF_INET;
         saddr.sin_port = htons(2223);
         saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+        while (is_sta && !is_wifi_connected()) {
+            // wait until connected to AP
+            printf("waiting\n");
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+        }
 
         server = socket(PF_INET, SOCK_DGRAM, 0);  // SOCK_RAW?
         printf("socket: %i\n", server);
@@ -43,7 +50,6 @@ void socket_listener_loop() {
         }
 
         if (listen(server, 5) == -1) {
-            printf("Socket listen error\n");
             printf("ERROR: Socket listen error [%s]\n", strerror(errno));
             vTaskDelay(10 / portTICK_PERIOD_MS);
             continue;
@@ -64,8 +70,6 @@ void socket_listener_loop() {
         }
     }
 }
-
-char *input = "1\n"; // 11
 
 void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
     int socket_fd = -1;
@@ -103,7 +107,7 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
             }
 
             if (!esp_wifi_internal_tx_is_stop()) {
-                if (sendto(socket_fd, &input, strlen(input), 0, &caddr, sizeof(caddr)) != strlen(input)) {
+                if (sendto(socket_fd, &input, strlen(input), 0, (const struct sockaddr *) &caddr, sizeof(caddr)) != strlen(input)) {
                     printf("ERROR: failed writing network data [%s]\n", strerror(errno));
                     vTaskDelay(10 / portTICK_PERIOD_MS);
                     continue;
@@ -145,11 +149,15 @@ void socket_transmitter_ap_loop(int (*get_num_clients)()) {
                 break;
             }
 
-            char *input = "000000000000000000000000000000000000000000000000000000000000000000000000000\n"; // 75
-            printf("writing\n");
-            if (write(socket_fd, &input, strlen(input)) != strlen(input)) {
-                printf("error writing network data [%s]\n", strerror(errno));
-                continue;
+            if (!esp_wifi_internal_tx_is_stop()) {
+                printf("writing\n");
+                vTaskDelay(1 / portTICK_PERIOD_MS);
+
+                if (sendto(socket_fd, &input, strlen(input), 0, (const struct sockaddr *) &caddr, sizeof(caddr)) != strlen(input)) {
+                    printf("ERROR: failed writing network data [%s]\n", strerror(errno));
+                    vTaskDelay(10 / portTICK_PERIOD_MS);
+                    continue;
+                }
             }
         }
     }
@@ -201,12 +209,12 @@ void socket_transmitter_ap_loop_multi_sta(int (*get_num_clients)()) {
                     socket_fd[i] = socket(PF_INET, SOCK_DGRAM, 0);
                     if (socket_fd[i] == -1) {
                         printf("SOCKET_ERROR: Socket creation error [%s]\n", strerror(errno));
-                        socket_fd[i] = NULL;
+                        socket_fd[i] = -1;
                         continue;
                     }
                     if (connect(socket_fd[i], (const struct sockaddr *) &caddr, sizeof(struct sockaddr)) == -1) {
                         printf("SOCKET_ERROR: socket connection error [%s]\n", strerror(errno));
-                        socket_fd[i] = NULL;
+                        socket_fd[i] = -1;
                         continue;
                     }
                     last_num_clients++;

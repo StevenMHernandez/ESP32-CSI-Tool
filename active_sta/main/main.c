@@ -14,12 +14,12 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#include "nvs_component.h"
-#include "sd_component.h"
-#include "csi_component.h"
-#include "time_component.h"
-#include "input_component.h"
-#include "sockets_component.h"
+#include "../../_components/nvs_component.h"
+#include "../../_components/sd_component.h"
+#include "../../_components/csi_component.h"
+#include "../../_components/time_component.h"
+#include "../../_components/input_component.h"
+#include "../../_components/sockets_component.h"
 
 /*
  * The examples use WiFi configuration that you can set via 'make menuconfig'.
@@ -77,7 +77,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
             esp_wifi_connect();
             break;
         case SYSTEM_EVENT_STA_GOT_IP:
-            ESP_LOGI(TAG, "got ip:%s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
+            ESP_LOGI(TAG, "got ip:%s", ip4addr_ntoa((const ip4_addr_t *) &event->event_info.got_ip.ip_info.ip));
             s_retry_num = 0;
             xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
             break;
@@ -137,6 +137,5 @@ void app_main() {
     station_init();
     csi_init("STA");
 
-//    socket_listener_loop();
     socket_transmitter_sta_loop(&is_wifi_connected);
 }
