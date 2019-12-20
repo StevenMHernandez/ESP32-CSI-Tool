@@ -16,7 +16,7 @@ In addition to these ESP32 specific projects, we also consider methods for analy
 
 ## Installation
 
-First, Install Espressif IoT Development Framework (ESP-IDF) by following their [https://docs.espressif.com/projects/esp-idf/en/v3.3.1/get-started/index.html](step by step installation guide).
+First, Install Espressif IoT Development Framework (ESP-IDF) by following their [step by step installation guide](https://docs.espressif.com/projects/esp-idf/en/v3.3.1/get-started/index.html).
 Notice, this project requires the **current stable version v3.3.1 of ESP-IDF**.
 
 Next, clone this repository:
@@ -33,9 +33,9 @@ To begin working with a given codebase, open a terminal and change into the resp
 ```
 cd ./active_sta # For Active Station
 # OR
-cs ./active_ap # For Active Access Point
+cd ./active_ap # For Active Access Point
 # OR
-cs ./passive # For Passive CSI collection
+cd ./passive # For Passive CSI collection
 ```
 
 We can now begin configuring and flashing your ESP32.
@@ -43,7 +43,7 @@ We can now begin configuring and flashing your ESP32.
 ## Configuration (ESP-IDF)
 
 The ESP-IDF provides great control over project configuration. 
-This configuration can be running the following command from a terminal.
+This configuration can be updated by running the following command from your terminal.
 
 ```
 make menuconfig
@@ -56,7 +56,7 @@ The following configurations are important for this project:
 
 1. `Serial flasher config > Default serial port` This port may not be correct if you have multiple ESP32s connected to your computer. Find the port by running the following comment: `ls /dev/cu.*` while the ESP32 is connected. The port should look something like the following: **/dev/cu.SLAB_USBtoUART**
 2. `Serial flasher config > Default baud rate > 1552000 baud` This allows more data to be transmitted on the Serial port
-3. `Serial flasher config > 'make monitor' baud rate > Custom Baud Rate1552000 baud`
+3. `Serial flasher config > 'make monitor' baud rate > Custom Baud Rate`
 4. `Serial flasher config > Custom baud rate value > 1552000`
 5. `Component config > ESP32-specific > UART console baud rate > 1552000`
 6. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
@@ -76,7 +76,7 @@ To exit monitoring, use `ctrl+]`
 ## Collecting CSI Data
 
 There are two methods to collect CSI data. 
-If your ESP32 has an SD card on board (such as the TTGO T8 V1.7 ESP32), the ESP32 will automatically detect the SD card and automaticaly output CSI data to a simple csv file.
+If your ESP32 has an SD card on board (such as the TTGO T8 V1.7 ESP32), the ESP32 will automatically detect the SD card and automatically output CSI data to a simple csv file.
 
 If the device does not have an SD card or you wish to collect the data directly from the Serial port on your computer, you can run the following command:
 
@@ -97,7 +97,7 @@ Once data has been collected, we now wish to run analysis and (most likely) appl
 Luckily, the output from the esp32 is a simple CSV file, thus we can pass the contents to any available CSV parser in our language of choice (Python, MATLAB, R, etc.). 
 The use of CSV was selected for its simplicity and small size when compared with the likes of XML or JSON.
 
-## Additional information:
+## Advanced:
 
 ### Setting Local Time
 
