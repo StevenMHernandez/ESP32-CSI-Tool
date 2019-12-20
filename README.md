@@ -55,11 +55,12 @@ So for example, make sure when you change the Wi-Fi password in *Active CSI coll
 The following configurations are important for this project:
 
 1. `Serial flasher config > Default serial port` This port may not be correct if you have multiple ESP32s connected to your computer. Find the port by running the following comment: `ls /dev/cu.*` while the ESP32 is connected. The port should look something like the following: **/dev/cu.SLAB_USBtoUART**
-2. `Serial flasher config > Default baud rate > 921600 baud` This allows more data to be transmitted on the Serial port
-3. `Serial flasher config > 'make monitor' baud rate > 921600 baud`
-4. `Component config > Common ESP-related > UART console baud rate > 921600`
-5. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
-6. `ESP32 CSI Tool Config > ****` all options in this menu can be specified per your experiment requirements.
+2. `Serial flasher config > Default baud rate > 1552000 baud` This allows more data to be transmitted on the Serial port
+3. `Serial flasher config > 'make monitor' baud rate > Custom Baud Rate1552000 baud`
+4. `Serial flasher config > Custom baud rate value > 1552000`
+5. `Component config > ESP32-specific > UART console baud rate > 1552000`
+6. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
+7. `ESP32 CSI Tool Config > ****` all options in this menu can be specified per your experiment requirements.
 
 ## Flash ESP32
 

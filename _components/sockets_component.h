@@ -18,7 +18,7 @@
 int server, client;
 #define NUM_RECV 2
 char recv_buf[NUM_RECV + 1];
-char *input = "1\n";
+char *input = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\n";
 
 void socket_listener_loop(bool is_sta, bool (*is_wifi_connected)()) {
     int server = -1;
@@ -75,8 +75,7 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
     int socket_fd = -1;
     while (1) {
         close(socket_fd);
-//        char *ip = "192.168.4.1";
-        char *ip = "172.20.10.1";
+        char *ip = "192.168.4.1";
         struct sockaddr_in caddr;
         caddr.sin_family = AF_INET;
         caddr.sin_port = htons(2223);
@@ -106,13 +105,12 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
                 break;
             }
 
-            if (!esp_wifi_internal_tx_is_stop()) {
-                if (sendto(socket_fd, &input, strlen(input), 0, (const struct sockaddr *) &caddr, sizeof(caddr)) != strlen(input)) {
-                    printf("ERROR: failed writing network data [%s]\n", strerror(errno));
-                    vTaskDelay(10 / portTICK_PERIOD_MS);
-                    continue;
-                }
+            if (sendto(socket_fd, &input, strlen(input), 0, (const struct sockaddr *) &caddr, sizeof(caddr)) != strlen(input)) {
+                printf("ERROR: failed writing network data [%s]\n", strerror(errno));
+                vTaskDelay(1);
+                continue;
             }
+            vTaskDelay(1); // This limits TX to approximately 100 per second.
         }
     }
 }

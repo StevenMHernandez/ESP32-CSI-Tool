@@ -14,7 +14,7 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     outprintf("%s,", project_type);
     outprintf("%s,", mac);
 
-//    // https://github.com/espressif/esp-idf/blob/9d0ca60398481a44861542638cfdc1949bb6f312/components/esp_wifi/include/esp_wifi_types.h#L314
+    // https://github.com/espressif/esp-idf/blob/9d0ca60398481a44861542638cfdc1949bb6f312/components/esp_wifi/include/esp_wifi_types.h#L314
     outprintf("%d,", d.rx_ctrl.rssi);
     outprintf("%d,", d.rx_ctrl.rate);
     outprintf("%d,", d.rx_ctrl.sig_mode);
@@ -50,7 +50,7 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     outprintf("]");
     outprintf("\n");
     sd_flush();
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+    vTaskDelay(1 / portTICK_PERIOD_MS);
 }
 
 void _print_csi_csv_header() {

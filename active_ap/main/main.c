@@ -75,7 +75,7 @@ void softap_init() {
             .ap = {
                     .ssid = EXAMPLE_ESP_WIFI_SSID,
                     .password = EXAMPLE_ESP_WIFI_PASS,
-                    .max_connection = 8, //EXAMPLE_MAX_STA_CONN,
+                    .max_connection = 8,
                     .authmode = WIFI_AUTH_WPA_WPA2_PSK,
                     .channel = 3,
             },

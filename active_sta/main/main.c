@@ -131,11 +131,20 @@ void station_init() {
     ESP_LOGI(TAG, "connect to ap SSID:%s password:%s", EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
 }
 
+TaskHandle_t xHandle = NULL;
+
+void vTask_socket_transmitter_sta_loop(void *pvParameters) {
+    for (;;) {
+        socket_transmitter_sta_loop(&is_wifi_connected);
+    }
+}
+
 void app_main() {
     nvs_init();
     sd_init();
     station_init();
     csi_init("STA");
 
-    socket_transmitter_sta_loop(&is_wifi_connected);
+    xTaskCreatePinnedToCore(vTask_socket_transmitter_sta_loop, "socket_transmitter_sta_loop",
+                            10000, (void *) &is_wifi_connected, 100, xHandle, 1);
 }
