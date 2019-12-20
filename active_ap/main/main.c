@@ -36,8 +36,6 @@ static EventGroupHandle_t s_wifi_event_group;
 
 static const char *TAG = "Active CSI collection (AP)";
 
-int num_clients = 0;
-
 static esp_err_t event_handler(void *ctx, system_event_t *event) {
     switch (event->event_id) {
         case SYSTEM_EVENT_AP_STACONNECTED:
@@ -46,7 +44,6 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
             " join, AID=%d",
                     MAC2STR(event->event_info.sta_connected.mac),
                     event->event_info.sta_connected.aid);
-            num_clients++;
             break;
         case SYSTEM_EVENT_AP_STADISCONNECTED:
             ESP_LOGI(TAG, "station:"
@@ -54,7 +51,6 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
             "leave, AID=%d",
                     MAC2STR(event->event_info.sta_disconnected.mac),
                     event->event_info.sta_disconnected.aid);
-            num_clients--;
             break;
         default:
             break;
@@ -75,7 +71,7 @@ void softap_init() {
             .ap = {
                     .ssid = EXAMPLE_ESP_WIFI_SSID,
                     .password = EXAMPLE_ESP_WIFI_PASS,
-                    .max_connection = 8,
+                    .max_connection = EXAMPLE_MAX_STA_CONN,
                     .authmode = WIFI_AUTH_WPA_WPA2_PSK,
                     .channel = 3,
             },
@@ -133,10 +129,6 @@ httpd_handle_t webserver_init(void) {
     }
 
     return server;
-}
-
-int get_num_clients() {
-    return num_clients;
 }
 
 void app_main() {
