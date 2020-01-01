@@ -73,7 +73,7 @@ void softap_init() {
                     .password = EXAMPLE_ESP_WIFI_PASS,
                     .max_connection = EXAMPLE_MAX_STA_CONN,
                     .authmode = WIFI_AUTH_WPA_WPA2_PSK,
-                    .channel = 3,
+                    .channel = 8,
             },
     };
     if (strlen(EXAMPLE_ESP_WIFI_PASS) == 0) {
@@ -87,48 +87,6 @@ void softap_init() {
     esp_wifi_set_ps(WIFI_PS_NONE);
 
     ESP_LOGI(TAG, "softap_init finished. SSID:%s password:%s", EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
-}
-
-void free_ctx_func(void *ctx) {
-    free(ctx);
-}
-
-esp_err_t get_handler(httpd_req_t *req) {
-    if (!req->sess_ctx) {
-        req->sess_ctx = malloc(sizeof(int));
-        req->free_ctx = free_ctx_func;
-    }
-
-    /* Send the current (local) timestamp */
-    char* resp = time_string_get();
-    httpd_resp_send(req, resp, strlen(resp));
-    free(resp);
-
-    return ESP_OK;
-}
-
-/* URI handler structure for GET /uri */
-httpd_uri_t uri_get = {
-        .uri      = "/",
-        .method   = HTTP_GET,
-        .handler  = get_handler,
-        .user_ctx = NULL
-};
-
-
-/* Function for starting the webserver */
-httpd_handle_t webserver_init(void) {
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-
-    httpd_handle_t server = NULL;
-
-    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
-
-    if (httpd_start(&server, &config) == ESP_OK) {
-        httpd_register_uri_handler(server, &uri_get);
-    }
-
-    return server;
 }
 
 void app_main() {

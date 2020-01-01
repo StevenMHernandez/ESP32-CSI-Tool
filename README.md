@@ -60,6 +60,7 @@ The following configurations are important for this project:
 4. `Serial flasher config > Custom baud rate value > 1552000`
 5. `Component config > ESP32-specific > UART console baud rate > 1552000`
 6. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
+5. `Component config > FreeRTOS > Tick rate (Hz) > 1000`
 7. `ESP32 CSI Tool Config > ****` all options in this menu can be specified per your experiment requirements.
 
 ## Flash ESP32

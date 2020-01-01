@@ -12,6 +12,14 @@ menu "ESP32 CSI Tool Config"
         help
             WiFi password (WPA or WPA2) for the example to use.
 
+    config PACKET_RATE
+        int "Packet TX Rate"
+        default "100"
+        help
+            By transmitting at some number of packets per second, the ESP32 should receive CSI at the same rate.
+            However, this is not guaranteed depending on overhead such as Serial baud rate.
+            Minimum value: 1, Maximum value: 1000
+
     config SHOULD_COLLECT_CSI
         bool "Should this ESP32 collect and print CSI data?"
         default "y"

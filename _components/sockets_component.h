@@ -14,7 +14,7 @@
 #include "esp_event_loop.h"
 #include <esp_http_server.h>
 
-char *data = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\n";
+char *data = "1\n";
 
 void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
     int socket_fd = -1;
@@ -52,10 +52,14 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
 
             if (sendto(socket_fd, &data, strlen(data), 0, (const struct sockaddr *) &caddr, sizeof(caddr)) != strlen(data)) {
                 printf("ERROR: failed writing network data [%s]\n", strerror(errno));
-                vTaskDelay(1);
+                vTaskDelay(10);
                 continue;
             }
-            vTaskDelay(1); // This limits TX to approximately 100 per second.
+            #ifdef CONFIG_PACKET_RATE
+            vTaskDelay(CONFIG_PACKET_RATE != 0 ? 1000 / CONFIG_PACKET_RATE : 0);
+            #else
+            vTaskDelay(10); // This limits TX to approximately 100 per second.
+            #endif
         }
     }
 }
