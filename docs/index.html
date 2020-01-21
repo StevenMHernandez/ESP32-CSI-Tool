@@ -3,16 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>ESP32 CSI Toolkit</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
-        body {
-            margin: 0 auto;
-            width: 630px;
+        * {
+            font-size: 14px;
+            line-height: 1.428;
         }
-        h1,h2,h3 {
+        html {
+            background: #f6f6f6;
+            margin-top: 15px;
+        }
+        body {
+            background: none;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
             font-family: sans-serif;
         }
         h1 {
             text-align: center;
+            font-size: 2rem;
+        }
+        h2 {
+            font-size: 1.7rem;
+        }
+        h3 {
+            font-size: 1.5rem;
         }
         figure {
             margin-top: 0;
@@ -20,35 +37,76 @@
         figcaption {
             font-size: 0.9rem;
         }
+        ol {
+            padding: 0;
+            text-align: center;
+        }
+        ol li {
+            display: inline;
+            margin: 0 20px;
+        }
     </style>
 </head>
 <body>
-<h1>ESP32 CSI Toolkit</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 offset-lg-2 offset-md-1">
+            <h1>ESP32 CSI Toolkit</h1>
 
-<figure style="float: right">
-    <img src="images/esp32.jpg" alt="Photograph of an ESP32" width="200px">
-    <figcaption>Standard ESP32 model</figcaption>
-</figure>
+            <ol>
+                <li><a href="https://github.com/StevenMHernandez/ESP32-CSI-Tool">GitHub</a></li>
+                <li><a href="https://github.com/StevenMHernandez/ESP32-CSI-Tool/blob/master/README.md">Documentation</a>
+                </li>
+                <li><a href="https://github.com/StevenMHernandez/ESP32-CSI-Tool/archive/master.zip">Download</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ol>
 
-<p>
-    The ESP32 CSI Toolkit provides researchers access to Channel State Information (CSI) directly from the small ESP32 microcontroller.
-    An ESP32 flashed with this toolkit can allow for online CSI processing from a computer, smartphone or even standalone.
-    These features along with the ESP32's small size can give researchers the ability to perform tasks such as Wi-Fi Sensing with CSI in new ways.
-    All without requiring complicated firmware updates all packaged as a concise codebase.
-</p>
+            <figure style="float: right">
+                <img src="images/esp32.jpg" alt="Photograph of an ESP32 (NodeMCU)" width="200px">
+                <figcaption>ESP32 model (NodeMCU)</figcaption>
+            </figure>
 
-<p style="color: red">
-    Progress on writing tool documentation are currently in progress. Codebase and documentation will soon appear on this website.
-</p>
+            <p>
+                The ESP32 CSI Toolkit provides researchers access to Channel State Information (CSI) directly from the ESP32 microcontroller.
+                An ESP32 flashed with this toolkit can provide online CSI processing from any computer, smartphone or even standalone.
+                These features along with the ESP32's small size gives researchers the ability to perform tasks such as Wi-Fi Sensing with CSI in new ways.
+                All without requiring complicated firmware hacks.
+            </p>
 
-<h2>Features of Toolkit</h2>
+            <p><a href="https://github.com/StevenMHernandez/ESP32-CSI-Tool/archive/master.zip">Download Documentation
+                and
+                Toolkit</a></p>
 
-<ul>
-    <li>Transmit CSI through USB serial in real-time to computer or smartphone</li>
-    <li>Record CSI to on-board microSD card for later processing</li>
-    <li>Active Access Point (CSI-Receiver)</li>
-    <li>Active Station (CSI-Receiver)</li>
-</ul>
+            <h2>Features of Toolkit</h2>
 
+            <ul>
+                <li>Receive CSI and transmit data through USB serial in real-time to computer or smartphone</li>
+                <li>Record CSI to on-board microSD card for later processing</li>
+                <li>Active Access Point</li>
+                <li>Active Station</li>
+                <li>Passive Receiver</li>
+            </ul>
+
+            <h2>Which ESP32 modules?</h2>
+
+            <p>The toolkit has been tested with the following development boards, but any ESP32 should work:</p>
+
+            <ul>
+                <li>TTGO T8 (with SD card)</li>
+                <li>NodeMCU (ESP32 Version)</li>
+                <li>WINGONEER TS V1.2</li>
+            </ul>
+
+            <hr>
+
+            <h2>Contact</h2>
+
+            <p id="contact">
+                Toolkit developed by: <a href="mailto:hernandezsm@vcu.edu">Steven M. Hernandez</a> | <a
+                    href="http://www.people.vcu.edu/~ebulut/">MoWiNG Lab</a>
+            </p>
+        </div>
+    </div>
+</div>
 </body>
 </html>
