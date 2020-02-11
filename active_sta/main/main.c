@@ -143,7 +143,7 @@ void app_main() {
     nvs_init();
     sd_init();
     station_init();
-    csi_init("STA");
+//    csi_init("STA");
 
     xTaskCreatePinnedToCore(vTask_socket_transmitter_sta_loop, "socket_transmitter_sta_loop",
                             10000, (void *) &is_wifi_connected, 100, xHandle, 1);

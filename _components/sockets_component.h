@@ -13,6 +13,9 @@
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
 #include <esp_http_server.h>
+#include "rom/ets_sys.h"
+
+#define CONFIG_PACKET_RATE 350
 
 char *data = "1\n";
 
@@ -50,16 +53,19 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
                 break;
             }
 
-            if (sendto(socket_fd, &data, strlen(data), 0, (const struct sockaddr *) &caddr, sizeof(caddr)) != strlen(data)) {
-                printf("ERROR: failed writing network data [%s]\n", strerror(errno));
-                vTaskDelay(10);
+            if (sendto(socket_fd, &data, strlen(data), 0, (const struct sockaddr *) &caddr, sizeof(caddr)) !=
+                strlen(data)) {
+                vTaskDelay(1);
                 continue;
             }
-            #ifdef CONFIG_PACKET_RATE
-            vTaskDelay(CONFIG_PACKET_RATE != 0 ? 1000 / CONFIG_PACKET_RATE : 0);
-            #else
+            vTaskDelay(2);
+
+#ifdef CONFIG_PACKET_RATE
+            vTaskDelay(CONFIG_PACKET_RATE != 0 ? floor(1000 / CONFIG_PACKET_RATE) : 0);
+            ets_delay_us(((1000.0 / CONFIG_PACKET_RATE) - floor(1000 / CONFIG_PACKET_RATE)) * 1000);
+#else
             vTaskDelay(10); // This limits TX to approximately 100 per second.
-            #endif
+#endif
         }
     }
 }

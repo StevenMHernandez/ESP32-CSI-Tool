@@ -2,8 +2,15 @@
 #define ESP32_CSI_CSI_COMPONENT_H
 
 #include "time_component.h"
+#include "math.h"
 
 char *project_type;
+
+#define CSI_RAW 1
+#define CSI_AMPLITUDE 0
+#define CSI_PHASE 0
+
+#define CSI_TYPE CSI_RAW
 
 void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     wifi_csi_info_t d = data[0];
@@ -35,19 +42,40 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     outprintf("%d,", d.rx_ctrl.sig_len);
     outprintf("%d,", d.rx_ctrl.rx_state);
 
-    char* resp = time_string_get();
+    char *resp = time_string_get();
     outprintf("%d,", real_time_set);
     outprintf("%s,", resp);
     free(resp);
 
+    int8_t *my_ptr;
+
+#if CSI_RAW
     outprintf("%d,[", data->len);
-    int8_t *my_ptr = data->buf;
+    my_ptr = data->buf;
+
     for (int i = 0; i < 128; i++) {
         outprintf("%d ", my_ptr[i]);
-//        outprintf("%d ", (uint8_t) my_ptr[i]);
-//        outprintf("%02x", (uint8_t) my_ptr[i]);
-}
+    }
     outprintf("]");
+#endif
+#if CSI_AMPLITUDE
+    outprintf("%d,[", data->len);
+    my_ptr = data->buf;
+
+    for (int i = 0; i < 64; i++) {
+        outprintf("%.4f ", sqrt(pow(my_ptr[i * 2], 2) + pow(my_ptr[(i * 2) + 1], 2)));
+    }
+    outprintf("]");
+#endif
+#if CSI_PHASE
+    outprintf("%d,[", data->len);
+    my_ptr = data->buf;
+
+    for (int i = 0; i < 64; i++) {
+                outprintf("%.4f ", atan2(my_ptr[i*2], my_ptr[(i*2)+1]));
+            }
+    outprintf("]");
+#endif
     outprintf("\n");
     sd_flush();
     vTaskDelay(0);
