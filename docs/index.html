@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-161272930-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-161272930-1');
+    </script>
+
     <meta charset="UTF-8">
     <title>ESP32 CSI Toolkit</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
@@ -69,7 +78,7 @@
             <p>
                 The ESP32 CSI Toolkit provides researchers access to Channel State Information (CSI) directly from the ESP32 microcontroller.
                 An ESP32 flashed with this toolkit can provide online CSI processing from any computer, smartphone or even standalone.
-                These features along with the ESP32's small size gives researchers the ability to perform tasks such as Wi-Fi Sensing with CSI in new ways.
+                These features along with the ESP32's small size gives researchers the ability to perform tasks such as Wi-Fi Sensing and localization with CSI in new ways.
                 All without requiring complicated firmware hacks.
             </p>
 
@@ -95,6 +104,17 @@
                 <li>TTGO T8 (with SD card)</li>
                 <li>NodeMCU (ESP32 Version)</li>
                 <li>WINGONEER TS V1.2</li>
+            </ul>
+
+            <h2>Supplementary Tools</h2>
+
+            The following code projects use the ESP32 CSI Toolkit to provide further utilities for researchers.
+
+            <ul>
+                <li>
+                <a href="https://github.com/StevenMHernandez/Android-CSI-Labelling-App">Android CSI Labelling App</a> - Android app which allows users to record and label CSI from an ESP32 in real-time.
+                <a href="https://github.com/StevenMHernandez/Android-ESP32-CSI">Android ESP32 CSI Library</a> - Allows your custom Android app to receive CSI in real-time.
+                </li>
             </ul>
 
             <hr>
