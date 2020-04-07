@@ -1,5 +1,7 @@
 # ESP32 CSI Tool
 
+[ESP32 CSI Tool Website](https://stevenmhernandez.github.io/ESP32-CSI-Tool/)
+
 The purpose of this project is to allow for the collection of Channel State Information (CSI) from the ESP32 Wi-Fi enabled microcontroller. 
 By collecting this data rich signal source, we can use this information for tasks such as Wi-Fi Sensing and Device-free Localization directly from the small, self contained ESP32 microcontroller.  
 
@@ -111,3 +113,9 @@ Additionally, the access point code in `./active_ap` will automatically send its
 This means that you only need to set the time for the access point and all other nodes will synchronize automatically.
 
 Finally, the simplest method is to simply run the output of `make monitor` through a utility function which appends the correct timestamp to the output when received on your computer as described in the **Collecting CSI Data* section above.
+
+### Misc.
+
+[ESP32 CSI Tool](https://stevenmhernandez.github.io/ESP32-CSI-Tool/) developed by [Steven M. Hernandez](https://github.com/StevenMHernandez)
+
+[Cite this Tool with BibTeX](https://raw.githubusercontent.com/StevenMHernandez/ESP32-CSI-Tool/master/docs/bibtex/esp32_csi_tool_wowmom.bib)
