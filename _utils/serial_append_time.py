@@ -5,7 +5,7 @@ import time
 # Run this utility to append the current real timestamp.
 #
 # Run:
-# `make monitor | python ../_utils/serial_append_timestamp.py`
+# `idf.py monitor | python ../_utils/serial_append_timestamp.py`
 #
 
 #

@@ -40,10 +40,10 @@ void sd_init() {
 #ifdef CONFIG_SEND_CSI_TO_SD
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
-    slot_config.gpio_miso = PIN_NUM_MISO;
-    slot_config.gpio_mosi = PIN_NUM_MOSI;
-    slot_config.gpio_sck = PIN_NUM_CLK;
-    slot_config.gpio_cs = PIN_NUM_CS;
+    slot_config.gpio_miso = (gpio_num_t) PIN_NUM_MISO;
+    slot_config.gpio_mosi = (gpio_num_t) PIN_NUM_MOSI;
+    slot_config.gpio_sck = (gpio_num_t) PIN_NUM_CLK;
+    slot_config.gpio_cs = (gpio_num_t) PIN_NUM_CS;
 
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
             .format_if_mount_failed = false,

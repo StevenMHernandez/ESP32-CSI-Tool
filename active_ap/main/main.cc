@@ -69,13 +69,15 @@ void softap_init() {
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
     wifi_config_t wifi_config = {
             .ap = {
-                    .ssid = EXAMPLE_ESP_WIFI_SSID,
-                    .password = EXAMPLE_ESP_WIFI_PASS,
-                    .max_connection = EXAMPLE_MAX_STA_CONN,
-                    .authmode = WIFI_AUTH_WPA_WPA2_PSK,
-                    .channel = 8,
+                .channel = 8,
+                .authmode = WIFI_AUTH_WPA_WPA2_PSK,
+                .max_connection = EXAMPLE_MAX_STA_CONN,
             },
     };
+
+    strlcpy((char *) wifi_config.ap.ssid, EXAMPLE_ESP_WIFI_SSID, sizeof(EXAMPLE_ESP_WIFI_SSID));
+    strlcpy((char *) wifi_config.ap.password, EXAMPLE_ESP_WIFI_PASS, sizeof(EXAMPLE_ESP_WIFI_PASS));
+
     if (strlen(EXAMPLE_ESP_WIFI_PASS) == 0) {
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
     }
@@ -89,9 +91,9 @@ void softap_init() {
     ESP_LOGI(TAG, "softap_init finished. SSID:%s password:%s", EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
 }
 
-void app_main() {
+extern "C" void app_main() {
     nvs_init();
     sd_init();
     softap_init();
-    csi_init("AP");
+    csi_init((char *) "AP");
 }

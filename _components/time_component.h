@@ -1,8 +1,8 @@
 #ifndef ESP32_CSI_TIME_COMPONENT_H
 #define ESP32_CSI_TIME_COMPONENT_H
 
-static char *SET_TIMESTAMP_SIMPLE_TEMPLATE = "%li.%li";
-static char *SET_TIMESTAMP_TEMPLATE = "SETTIME: %li.%li";
+static char *SET_TIMESTAMP_SIMPLE_TEMPLATE = (char *) "%li.%li";
+static char *SET_TIMESTAMP_TEMPLATE = (char *) "SETTIME: %li.%li";
 
 bool real_time_set = false;
 
@@ -31,9 +31,9 @@ void time_set(char *timestamp_string) {
 char *time_string_get() {
     struct timeval currentTimeGot;
     gettimeofday(&currentTimeGot, NULL);
-    ssize_t resp_size = snprintf(NULL, 0, "%li.%li", currentTimeGot.tv_sec, currentTimeGot.tv_usec);
-    char *resp = malloc(resp_size + 1);
-    snprintf(resp, resp_size + 1, "%li.%li", currentTimeGot.tv_sec, currentTimeGot.tv_usec);
+    ssize_t resp_size = snprintf(NULL, 0, (char *) "%li.%li", currentTimeGot.tv_sec, currentTimeGot.tv_usec);
+    char *resp = (char *) malloc(resp_size + 1);
+    snprintf(resp, resp_size + 1, (char *) "%li.%li", currentTimeGot.tv_sec, currentTimeGot.tv_usec);
     return resp;
 }
 

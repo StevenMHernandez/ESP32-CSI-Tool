@@ -5,7 +5,7 @@ import time
 # Run this utility script to view the rate at which CSI data is collected, aggregated per second.
 #
 # Run:
-# `make monitor | python ../_utils/serial_measure_rate.py`
+# `idf.py monitor | python ../_utils/serial_measure_rate.py`
 #
 
 interval_start_time = 0

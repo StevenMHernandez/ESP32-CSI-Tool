@@ -5,7 +5,7 @@
 #include "esp_spi_flash.h"
 #include "freertos/event_groups.h"
 #include "esp_wifi.h"
-#include <esp_wifi_internal.h>
+//#include <esp_wifi_internal.h>
 #include "esp_event_loop.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
@@ -48,8 +48,8 @@ esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
             ESP_LOGI(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
             if (!esp_http_client_is_chunked_response(evt->client)) {
                 if (!real_time_set) {
-                    char *data = malloc(evt->data_len + 1);
-                    strncpy(data, evt->data, evt->data_len);
+                    char *data = (char *) malloc(evt->data_len + 1);
+                    strncpy(data, (char *) evt->data, evt->data_len);
                     data[evt->data_len + 1] = '\0';
                     time_set(data);
                     free(data);
@@ -116,11 +116,12 @@ void station_init() {
 
     wifi_config_t wifi_config = {
             .sta = {
-                    .ssid = EXAMPLE_ESP_WIFI_SSID,
-                    .password = EXAMPLE_ESP_WIFI_PASS,
                     .channel = 8,
             },
     };
+
+    strlcpy((char *) wifi_config.sta.ssid, EXAMPLE_ESP_WIFI_SSID, sizeof(EXAMPLE_ESP_WIFI_SSID));
+    strlcpy((char *) wifi_config.sta.password, EXAMPLE_ESP_WIFI_PASS, sizeof(EXAMPLE_ESP_WIFI_PASS));
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
@@ -139,12 +140,12 @@ void vTask_socket_transmitter_sta_loop(void *pvParameters) {
     }
 }
 
-void app_main() {
+extern "C" void app_main() {
     nvs_init();
     sd_init();
     station_init();
 //    csi_init("STA");
 
-    xTaskCreatePinnedToCore(vTask_socket_transmitter_sta_loop, "socket_transmitter_sta_loop",
-                            10000, (void *) &is_wifi_connected, 100, xHandle, 1);
+    xTaskCreatePinnedToCore(&vTask_socket_transmitter_sta_loop, "socket_transmitter_sta_loop",
+                            10000, (void *) &is_wifi_connected, 100, &xHandle, 1);
 }

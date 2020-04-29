@@ -13,23 +13,20 @@
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
 #include <esp_http_server.h>
-#include "rom/ets_sys.h"
 
-#define CONFIG_PACKET_RATE 350
-
-char *data = "1\n";
+char *data = (char *) "1\n";
 
 void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
     int socket_fd = -1;
     while (1) {
         close(socket_fd);
-        char *ip = "192.168.4.1";
+        char *ip = (char *) "192.168.4.1";
         struct sockaddr_in caddr;
         caddr.sin_family = AF_INET;
         caddr.sin_port = htons(2223);
         while (!is_wifi_connected()) {
             // wait until connected to AP
-            printf("waiting\n");
+            printf("wifi not connected. waiting...\n");
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
         if (inet_aton(ip, &caddr.sin_addr) == 0) {

@@ -18,8 +18,8 @@ In addition to these ESP32 specific projects, we also consider methods for analy
 
 ## Installation
 
-First, Install Espressif IoT Development Framework (ESP-IDF) by following their [step by step installation guide](https://docs.espressif.com/projects/esp-idf/en/v3.3.1/get-started/index.html).
-Notice, this project requires the **current stable version v3.3.1 of ESP-IDF**.
+First, Install Espressif IoT Development Framework (ESP-IDF) by following their [step by step installation guide](https://docs.espressif.com/projects/esp-idf/en/v4.0/get-started/index.html).
+Notice, this project requires the **current stable version (v4.0) of ESP-IDF**.
 
 Next, clone this repository:
 
@@ -48,7 +48,7 @@ The ESP-IDF provides great control over project configuration.
 This configuration can be updated by running the following command from your terminal.
 
 ```
-make menuconfig
+idf.py menuconfig
 ```
 
 It is important to notice that these configurations are project specific and will not automatically be copied between sub-projects. 
@@ -58,7 +58,7 @@ The following configurations are important for this project:
 
 1. `Serial flasher config > Default serial port` This port may not be correct if you have multiple ESP32s connected to your computer. Find the port by running the following comment: `ls /dev/cu.*` while the ESP32 is connected. The port should look something like the following: **/dev/cu.SLAB_USBtoUART**
 2. `Serial flasher config > Default baud rate > 1552000 baud` This allows more data to be transmitted on the Serial port
-3. `Serial flasher config > 'make monitor' baud rate > Custom Baud Rate`
+3. `Serial flasher config > 'idf.py monitor' baud rate > Custom Baud Rate`
 4. `Serial flasher config > Custom baud rate value > 1552000`
 5. `Component config > ESP32-specific > UART console baud rate > 1552000`
 6. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
@@ -70,7 +70,7 @@ The following configurations are important for this project:
 Run the following command from within one of the sub-project's directories.
 
 ```
-make flash monitor
+idf.py flash monitor
 ```
 
 This will flash the ESP32 and once completed, will print incoming data from the freshly programmed ESP32's serial port. 
@@ -84,14 +84,14 @@ If your ESP32 has an SD card on board (such as the TTGO T8 V1.7 ESP32), the ESP3
 If the device does not have an SD card or you wish to collect the data directly from the Serial port on your computer, you can run the following command:
 
 ```
-make monitor | grep "CSI_DATA" > my-experiment-file.csv 
+idf.py monitor | grep "CSI_DATA" > my-experiment-file.csv 
 ```
 
 Because the clocks on the ESP32 are not synchronized with any real world time, it can be difficult to sync this data with other external data sources or sensors. 
 To help with this, we can pass output first through a python script which appends a timestamp from your computer.
 
 ```
-make monitor | python ./_utils/serial_append_time.py > my-experiment-file.csv
+idf.py monitor | python ./_utils/serial_append_time.py > my-experiment-file.csv
 ```
 
 ## Analysing CSI Data
@@ -107,12 +107,12 @@ The use of CSV was selected for its simplicity and small size when compared with
 Because the ESP32 is not connected to the internet as a whole, it is not possible to automatically set the clock time locally.
 To handle this, we offer the ability to set the time in a couple of different ways.
 
-First, while running `make monitor` we can type the following `SETTIME: 123123123123` then `ENTER` where the number 123123123123 indicates the current UNIX time in seconds.
+First, while running `idf.py monitor` we can type the following `SETTIME: 123123123123` then `ENTER` where the number 123123123123 indicates the current UNIX time in seconds.
 
 Additionally, the access point code in `./active_ap` will automatically send its current timestamp to any connected station running the `./active_sta` sub-project.
 This means that you only need to set the time for the access point and all other nodes will synchronize automatically.
 
-Finally, the simplest method is to simply run the output of `make monitor` through a utility function which appends the correct timestamp to the output when received on your computer as described in the **Collecting CSI Data* section above.
+Finally, the simplest method is to simply run the output of `idf.py monitor` through a utility function which appends the correct timestamp to the output when received on your computer as described in the **Collecting CSI Data* section above.
 
 ### Misc.
 

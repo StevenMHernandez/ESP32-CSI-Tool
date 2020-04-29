@@ -5,7 +5,7 @@
 #include "esp_spi_flash.h"
 #include "freertos/event_groups.h"
 #include "esp_wifi.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "esp_http_server.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
@@ -17,7 +17,6 @@
 #include "../../_components/input_component.h"
 
 void passive_init() {
-    tcpip_adapter_init();
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_NULL));
@@ -34,10 +33,10 @@ void passive_init() {
     esp_wifi_set_channel(curChannel, WIFI_SECOND_CHAN_NONE);
 }
 
-void app_main() {
+extern "C" void app_main(void) {
     nvs_init();
     sd_init();
     passive_init();
-    csi_init("PASSIVE");
+    csi_init((char *) "PASSIVE");
     input_loop();
 }
