@@ -3,6 +3,8 @@
 
 #include "time_component.h"
 #include "math.h"
+#include <sstream>
+#include <iostream>
 
 char *project_type;
 
@@ -12,73 +14,84 @@ char *project_type;
 
 #define CSI_TYPE CSI_RAW
 
+SemaphoreHandle_t mutex = xSemaphoreCreateMutex();
+
 void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
+    xSemaphoreTake(mutex, portMAX_DELAY);
+    std::stringstream ss;
+
     wifi_csi_info_t d = data[0];
     char mac[20] = {0};
     sprintf(mac, "%02X:%02X:%02X:%02X:%02X:%02X", d.mac[0], d.mac[1], d.mac[2], d.mac[3], d.mac[4], d.mac[5]);
 
-    outprintf("CSI_DATA,");
-    outprintf("%s,", project_type);
-    outprintf("%s,", mac);
-
-    // https://github.com/espressif/esp-idf/blob/9d0ca60398481a44861542638cfdc1949bb6f312/components/esp_wifi/include/esp_wifi_types.h#L314
-    outprintf("%d,", d.rx_ctrl.rssi);
-    outprintf("%d,", d.rx_ctrl.rate);
-    outprintf("%d,", d.rx_ctrl.sig_mode);
-    outprintf("%d,", d.rx_ctrl.mcs);
-    outprintf("%d,", d.rx_ctrl.cwb);
-    outprintf("%d,", d.rx_ctrl.smoothing);
-    outprintf("%d,", d.rx_ctrl.not_sounding);
-    outprintf("%d,", d.rx_ctrl.aggregation);
-    outprintf("%d,", d.rx_ctrl.stbc);
-    outprintf("%d,", d.rx_ctrl.fec_coding);
-    outprintf("%d,", d.rx_ctrl.sgi);
-    outprintf("%d,", d.rx_ctrl.noise_floor);
-    outprintf("%d,", d.rx_ctrl.ampdu_cnt);
-    outprintf("%d,", d.rx_ctrl.channel);
-    outprintf("%d,", d.rx_ctrl.secondary_channel);
-    outprintf("%d,", d.rx_ctrl.timestamp);
-    outprintf("%d,", d.rx_ctrl.ant);
-    outprintf("%d,", d.rx_ctrl.sig_len);
-    outprintf("%d,", d.rx_ctrl.rx_state);
-
     char *resp = time_string_get();
-    outprintf("%d,", real_time_set);
-    outprintf("%s,", resp);
+
+    ss << "CSI_DATA,"
+       << project_type << ","
+       << mac << ","
+       // https://github.com/espressif/esp-idf/blob/9d0ca60398481a44861542638cfdc1949bb6f312/components/esp_wifi/include/esp_wifi_types.h#L314
+       << d.rx_ctrl.rssi << ","
+       << d.rx_ctrl.rate << ","
+       << d.rx_ctrl.sig_mode << ","
+       << d.rx_ctrl.mcs << ","
+       << d.rx_ctrl.cwb << ","
+       << d.rx_ctrl.smoothing << ","
+       << d.rx_ctrl.not_sounding << ","
+       << d.rx_ctrl.aggregation << ","
+       << d.rx_ctrl.stbc << ","
+       << d.rx_ctrl.fec_coding << ","
+       << d.rx_ctrl.sgi << ","
+       << d.rx_ctrl.noise_floor << ","
+       << d.rx_ctrl.ampdu_cnt << ","
+       << d.rx_ctrl.channel << ","
+       << d.rx_ctrl.secondary_channel << ","
+       << d.rx_ctrl.timestamp << ","
+       << d.rx_ctrl.ant << ","
+       << d.rx_ctrl.sig_len << ","
+       << d.rx_ctrl.rx_state << ","
+       << real_time_set << ","
+       << resp << ","
+       << data->len << ",[";
+
+    printf(ss.str().c_str());
+    fflush(stdout);
+    vTaskDelay(0);
     free(resp);
 
     int8_t *my_ptr;
-
 #if CSI_RAW
-    outprintf("%d,[", data->len);
     my_ptr = data->buf;
-
-    for (int i = 0; i < 128; i++) {
-        outprintf("%d ", my_ptr[i]);
+    for (int i = 0; i < data->len; i++) {
+        printf("%d ", my_ptr[i]);
+        if (i % 100) {
+            fflush(stdout);
+            vTaskDelay(0);
+        }
     }
-    outprintf("]");
 #endif
 #if CSI_AMPLITUDE
-    outprintf("%d,[", data->len);
     my_ptr = data->buf;
-
-    for (int i = 0; i < 64; i++) {
-        outprintf("%.4f ", sqrt(pow(my_ptr[i * 2], 2) + pow(my_ptr[(i * 2) + 1], 2)));
+    for (int i = 0; i < data->len / 2; i++) {
+        printf("%d ", sqrt(pow(my_ptr[i * 2], 2) + pow(my_ptr[(i * 2) + 1], 2)));
+        if (i % 200) {
+            fflush(stdout);
+            vTaskDelay(0);
+        }
     }
-    outprintf("]");
 #endif
 #if CSI_PHASE
-    outprintf("%d,[", data->len);
     my_ptr = data->buf;
-
-    for (int i = 0; i < 64; i++) {
-                outprintf("%.4f ", atan2(my_ptr[i*2], my_ptr[(i*2)+1]));
-            }
-    outprintf("]");
+    for (int i = 0; i < data->len / 2; i++) {
+        printf("%d ", atan2(my_ptr[i*2], my_ptr[(i*2)+1]));
+        if (i % 200) {
+            fflush(stdout);
+            vTaskDelay(0);
+        }
+    }
 #endif
-    outprintf("\n");
-    sd_flush();
-    vTaskDelay(0);
+    outprintf("]\n");
+    xSemaphoreGive(mutex);
+    vTaskDelay(2);
 }
 
 void _print_csi_csv_header() {
@@ -93,7 +106,7 @@ void csi_init(char *type) {
     ESP_ERROR_CHECK(esp_wifi_set_csi(1));
 
     // @See: https://github.com/espressif/esp-idf/blob/master/components/esp_wifi/include/esp_wifi_types.h#L401
-    wifi_csi_config_t configuration_csi;
+        wifi_csi_config_t configuration_csi;
     configuration_csi.lltf_en = 1;
     configuration_csi.htltf_en = 1;
     configuration_csi.stbc_htltf2_en = 1;
