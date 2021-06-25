@@ -40,8 +40,6 @@ const int WIFI_CONNECTED_BIT = BIT0;
 
 static const char *TAG = "Active CSI collection (Station)";
 
-static int s_retry_num = 0;
-
 esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
     switch (evt->event_id) {
         case HTTP_EVENT_ON_DATA:
@@ -77,18 +75,13 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
             esp_wifi_connect();
             break;
         case SYSTEM_EVENT_STA_GOT_IP:
-            ESP_LOGI(TAG, "got ip:%s", ip4addr_ntoa((const ip4_addr_t *) &event->event_info.got_ip.ip_info.ip));
-            s_retry_num = 0;
+            ESP_LOGI(TAG, "Got ip: %s", ip4addr_ntoa((const ip4_addr_t *) &event->event_info.got_ip.ip_info.ip));
             xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
             break;
         case SYSTEM_EVENT_STA_DISCONNECTED: {
-            if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY) {
-                esp_wifi_connect();
-                xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
-                s_retry_num++;
-                ESP_LOGI(TAG, "retry to connect to the AP");
-            }
-            ESP_LOGI(TAG, "connect to the AP fail\n");
+            ESP_LOGI(TAG, "Retry connecting to the AP");
+            esp_wifi_connect();
+            xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
             break;
         }
         default:
