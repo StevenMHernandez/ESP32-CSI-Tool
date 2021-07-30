@@ -67,6 +67,10 @@ The following configurations are important for this project:
 5. `Component config > FreeRTOS > Tick rate (Hz) > 1000`
 7. `ESP32 CSI Tool Config > ****` all options in this menu can be specified per your experiment requirements.
 
+**NOTE:** For some systems, baud rate `1552000` does not work. Good alternatives to try are `921600`, `1000000`, `1152000`, and `1500000`.  
+**The higher baud rate the better! Baud rate is extremely important to achieve high sampling rates without lag!**  
+If you have a problem, please leave any relevant information such as operating system, esp-idf version, list of all baud rates work and baud rates that do not work etc in [issue #5](https://github.com/StevenMHernandez/ESP32-CSI-Tool/issues/5). 
+
 ## Flash ESP32
 
 Run the following command from within one of the sub-project's directories.
