@@ -1,5 +1,11 @@
 menu "ESP32 CSI Tool Config"
 
+    config WIFI_CHANNEL
+        int "WiFi Channel"
+        default 6
+        help
+            Select the WiFi channel of the AP. In North America, valid channels are {1,2,3,...,10,11}.
+
     config ESP_WIFI_SSID
         string "WiFi SSID"
         default "myssid"
@@ -22,11 +28,28 @@ menu "ESP32 CSI Tool Config"
 
     config SHOULD_COLLECT_CSI
         bool "Should this ESP32 collect and print CSI data?"
-        default "y"
+        default "n"
         help
             Allowing only a single ESP32 to collect CSI will likely increase the sampling frequency of your experiments.
 
+    config SHOULD_COLLECT_ONLY_LLTF
+        depends on SHOULD_COLLECT_CSI
+        bool "(Advanced users only) Should we only collect LLTF?"
+        default "y"
+        help
+            Each CSI frame can contain CSI either calculated through
+            (1) legacy long training field (LLTF),
+            (2) high throughput LTF (HT-LTF) and/or
+            (3) space-time block code HT-LTF (STBC-HT-LTF).
+            However, not all CSI frames have HT-LTF or STBC-HT-LTF while all CSI frame have LLTF.
+            For beginners collecting only LLTF is the best option while advanced users can handle issues such as
+            (1) HT-LTF or STBC-HT-LTF being missing, and
+            (2) possible decreases in sampling rate due to serial connection saturation.
+            [Advanced Users]: I cannot always help with these advanced issues,
+            but if you have ideas on improvements to these issues please share!
+
     config SEND_CSI_TO_SERIAL
+        depends on SHOULD_COLLECT_CSI
         bool "Send CSI data to Serial"
         default "y"
         help
@@ -34,10 +57,11 @@ menu "ESP32 CSI Tool Config"
             If you are storing to an SD card, it may be useful to deselect this option.
 
     config SEND_CSI_TO_SD
+        depends on SHOULD_COLLECT_CSI
         bool "Send CSI data to SD"
-        default "y"
+        default "n"
         help
             Sending data to an SD card can take time and buffer space.
-            If your ESP32 does not have an SD card, there is no reason to keep this behaviour.
+            If your ESP32 does not have an SD card, there is no reason to use this feature.
             If you do though, the program will be recognize this and not attempt writing to the SD card.
 endmenu

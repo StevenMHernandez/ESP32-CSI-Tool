@@ -5,7 +5,6 @@
 #include "esp_spi_flash.h"
 #include "freertos/event_groups.h"
 #include "esp_wifi.h"
-//#include <esp_wifi_internal.h>
 #include "esp_event_loop.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
@@ -30,6 +29,36 @@
 #define EXAMPLE_ESP_WIFI_SSID      CONFIG_ESP_WIFI_SSID
 #define EXAMPLE_ESP_WIFI_PASS      CONFIG_ESP_WIFI_PASSWORD
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
+
+#ifdef CONFIG_WIFI_CHANNEL
+#define WIFI_CHANNEL CONFIG_WIFI_CHANNEL
+#else
+#define WIFI_CHANNEL 6
+#endif
+
+#ifdef CONFIG_SHOULD_COLLECT_CSI
+#define SHOULD_COLLECT_CSI 1
+#else
+#define SHOULD_COLLECT_CSI 0
+#endif
+
+#ifdef CONFIG_SHOULD_COLLECT_ONLY_LLTF
+#define SHOULD_COLLECT_ONLY_LLTF 1
+#else
+#define SHOULD_COLLECT_ONLY_LLTF 0
+#endif
+
+#ifdef CONFIG_SEND_CSI_TO_SERIAL
+#define SEND_CSI_TO_SERIAL 1
+#else
+#define SEND_CSI_TO_SERIAL 0
+#endif
+
+#ifdef CONFIG_SEND_CSI_TO_SD
+#define SEND_CSI_TO_SD 1
+#else
+#define SEND_CSI_TO_SD 0
+#endif
 
 /* FreeRTOS event group to signal when we are connected*/
 static EventGroupHandle_t s_wifi_event_group;
@@ -109,7 +138,7 @@ void station_init() {
 
     wifi_config_t wifi_config = {
             .sta = {
-                    .channel = 8,
+                    .channel = WIFI_CHANNEL,
             },
     };
 
@@ -133,7 +162,30 @@ void vTask_socket_transmitter_sta_loop(void *pvParameters) {
     }
 }
 
+void config_print() {
+    printf("\n\n\n\n\n\n\n\n");
+    printf("-----------------------\n");
+    printf("ESP32 CSI Tool Settings\n");
+    printf("-----------------------\n");
+    printf("PROJECT_NAME: %s\n", "ACTIVE_STA");
+    printf("CONFIG_ESPTOOLPY_MONITOR_BAUD: %d\n", CONFIG_ESPTOOLPY_MONITOR_BAUD);
+    printf("CONFIG_ESP_CONSOLE_UART_BAUDRATE: %d\n", CONFIG_ESP_CONSOLE_UART_BAUDRATE);
+    printf("IDF_VER: %s\n", IDF_VER);
+    printf("-----------------------\n");
+    printf("WIFI_CHANNEL: %d\n", WIFI_CHANNEL);
+    printf("ESP_WIFI_SSID: %s\n", CONFIG_ESP_WIFI_SSID);
+    printf("ESP_WIFI_PASSWORD: %s\n", CONFIG_ESP_WIFI_PASSWORD);
+    printf("PACKET_RATE: %i\n", CONFIG_PACKET_RATE);
+    printf("SHOULD_COLLECT_CSI: %d\n", SHOULD_COLLECT_CSI);
+    printf("SHOULD_COLLECT_ONLY_LLTF: %d\n", SHOULD_COLLECT_ONLY_LLTF);
+    printf("SEND_CSI_TO_SERIAL: %d\n", SEND_CSI_TO_SERIAL);
+    printf("SEND_CSI_TO_SD: %d\n", SEND_CSI_TO_SD);
+    printf("-----------------------\n");
+    printf("\n\n\n\n\n\n\n\n");
+}
+
 extern "C" void app_main() {
+    config_print();
     nvs_init();
     sd_init();
     station_init();

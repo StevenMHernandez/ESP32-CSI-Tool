@@ -53,45 +53,38 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
        << resp << ","
        << data->len << ",[";
 
-    printf(ss.str().c_str());
-    fflush(stdout);
-    vTaskDelay(0);
-    free(resp);
+#if CONFIG_SHOULD_COLLECT_ONLY_LLTF
+    int data_len = 128;
+#else
+    int data_len = data->len;
+#endif
 
-    int8_t *my_ptr;
+int8_t *my_ptr;
 #if CSI_RAW
     my_ptr = data->buf;
-    for (int i = 0; i < data->len; i++) {
-        printf("%d ", my_ptr[i]);
-        if (i % 100) {
-            fflush(stdout);
-            vTaskDelay(0);
-        }
+    for (int i = 0; i < data_len; i++) {
+        ss << (int) my_ptr[i] << " ";
     }
 #endif
 #if CSI_AMPLITUDE
     my_ptr = data->buf;
-    for (int i = 0; i < data->len / 2; i++) {
-        printf("%d ", sqrt(pow(my_ptr[i * 2], 2) + pow(my_ptr[(i * 2) + 1], 2)));
-        if (i % 200) {
-            fflush(stdout);
-            vTaskDelay(0);
-        }
+    for (int i = 0; i < data_len / 2; i++) {
+        ss << (int) sqrt(pow(my_ptr[i * 2], 2) + pow(my_ptr[(i * 2) + 1], 2)) << " ";
     }
 #endif
 #if CSI_PHASE
     my_ptr = data->buf;
-    for (int i = 0; i < data->len / 2; i++) {
-        printf("%d ", atan2(my_ptr[i*2], my_ptr[(i*2)+1]));
-        if (i % 200) {
-            fflush(stdout);
-            vTaskDelay(0);
-        }
+    for (int i = 0; i < data_len / 2; i++) {
+        ss << (int) atan2(my_ptr[i*2], my_ptr[(i*2)+1]) << " ";
     }
 #endif
-    outprintf("]\n");
+    ss << "]\n";
+
+    printf(ss.str().c_str());
+    fflush(stdout);
+    vTaskDelay(0);
+    free(resp);
     xSemaphoreGive(mutex);
-    vTaskDelay(2);
 }
 
 void _print_csi_csv_header() {
@@ -106,7 +99,7 @@ void csi_init(char *type) {
     ESP_ERROR_CHECK(esp_wifi_set_csi(1));
 
     // @See: https://github.com/espressif/esp-idf/blob/master/components/esp_wifi/include/esp_wifi_types.h#L401
-        wifi_csi_config_t configuration_csi;
+    wifi_csi_config_t configuration_csi;
     configuration_csi.lltf_en = 1;
     configuration_csi.htltf_en = 1;
     configuration_csi.stbc_htltf2_en = 1;

@@ -11,7 +11,6 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
-#include "esp_event_loop.h"
 #include <esp_http_server.h>
 
 char *data = (char *) "1\n";
@@ -29,6 +28,7 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
             printf("wifi not connected. waiting...\n");
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
+        printf("initial wifi connection established.\n");
         if (inet_aton(ip, &caddr.sin_addr) == 0) {
             printf("ERROR: inet_aton\n");
             continue;
@@ -44,6 +44,7 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
             continue;
         }
 
+        printf("sending frames.\n");
         while (1) {
             if (!is_wifi_connected()) {
                 printf("ERROR: wifi is not connected\n");
@@ -55,7 +56,6 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
                 vTaskDelay(1);
                 continue;
             }
-            vTaskDelay(2);
 
 #ifdef CONFIG_PACKET_RATE
             vTaskDelay(CONFIG_PACKET_RATE != 0 ? floor(1000 / CONFIG_PACKET_RATE) : 0);
