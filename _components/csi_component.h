@@ -24,8 +24,6 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     char mac[20] = {0};
     sprintf(mac, "%02X:%02X:%02X:%02X:%02X:%02X", d.mac[0], d.mac[1], d.mac[2], d.mac[3], d.mac[4], d.mac[5]);
 
-    char *resp = time_string_get();
-
     ss << "CSI_DATA,"
        << project_type << ","
        << mac << ","
@@ -50,7 +48,7 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
        << d.rx_ctrl.sig_len << ","
        << d.rx_ctrl.rx_state << ","
        << real_time_set << ","
-       << resp << ","
+       << get_steady_clock_timestamp() << ","
        << data->len << ",[";
 
 #if CONFIG_SHOULD_COLLECT_ONLY_LLTF
@@ -83,7 +81,6 @@ int8_t *my_ptr;
     printf(ss.str().c_str());
     fflush(stdout);
     vTaskDelay(0);
-    free(resp);
     xSemaphoreGive(mutex);
 }
 

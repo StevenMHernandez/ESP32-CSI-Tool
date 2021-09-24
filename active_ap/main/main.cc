@@ -24,7 +24,7 @@
  * The examples use WiFi configuration that you can set via 'idf.py menuconfig'.
  *
  * If you'd rather not, just change the below entries to strings with
- * the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
+ * the config you want - ie #define ESP_WIFI_SSID "mywifissid"
  */
 #define ESP_WIFI_SSID      CONFIG_ESP_WIFI_SSID
 #define ESP_WIFI_PASS      CONFIG_ESP_WIFI_PASSWORD
@@ -146,5 +146,10 @@ extern "C" void app_main() {
     nvs_init();
     sd_init();
     softap_init();
+
+#if !(SHOULD_COLLECT_CSI)
+    printf("CSI will not be collected. Check `idf.py menuconfig  # > ESP32 CSI Tool Config` to enable CSI");
+#endif
+
     csi_init((char *) "AP");
 }

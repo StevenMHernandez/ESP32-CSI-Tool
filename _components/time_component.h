@@ -1,6 +1,8 @@
 #ifndef ESP32_CSI_TIME_COMPONENT_H
 #define ESP32_CSI_TIME_COMPONENT_H
 
+#include <chrono>
+
 static char *SET_TIMESTAMP_SIMPLE_TEMPLATE = (char *) "%li.%li";
 static char *SET_TIMESTAMP_TEMPLATE = (char *) "SETTIME: %li.%li";
 
@@ -28,13 +30,14 @@ void time_set(char *timestamp_string) {
     }
 }
 
-char *time_string_get() {
-    struct timeval currentTimeGot;
-    gettimeofday(&currentTimeGot, NULL);
-    ssize_t resp_size = snprintf(NULL, 0, (char *) "%li.%li", currentTimeGot.tv_sec, currentTimeGot.tv_usec);
-    char *resp = (char *) malloc(resp_size + 1);
-    snprintf(resp, resp_size + 1, (char *) "%li.%li", currentTimeGot.tv_sec, currentTimeGot.tv_usec);
-    return resp;
+double get_system_clock_timestamp() {
+    // returns timestamp in seconds (with decimal places)
+    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000000.0;
+}
+
+double get_steady_clock_timestamp() {
+    // returns timestamp in seconds (with decimal places)
+    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() / 1000000.0;
 }
 
 #endif //ESP32_CSI_TIME_COMPONENT_H

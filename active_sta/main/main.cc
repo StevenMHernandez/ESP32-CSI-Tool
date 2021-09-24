@@ -24,11 +24,10 @@
  * The examples use WiFi configuration that you can set via 'idf.py menuconfig'.
  *
  * If you'd rather not, just change the below entries to strings with
- * the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
+ * the config you want - ie #define ESP_WIFI_SSID "mywifissid"
  */
-#define EXAMPLE_ESP_WIFI_SSID      CONFIG_ESP_WIFI_SSID
-#define EXAMPLE_ESP_WIFI_PASS      CONFIG_ESP_WIFI_PASSWORD
-#define EXAMPLE_ESP_MAXIMUM_RETRY  10
+#define ESP_WIFI_SSID      CONFIG_ESP_WIFI_SSID
+#define ESP_WIFI_PASS      CONFIG_ESP_WIFI_PASSWORD
 
 #ifdef CONFIG_WIFI_CHANNEL
 #define WIFI_CHANNEL CONFIG_WIFI_CHANNEL
@@ -142,8 +141,8 @@ void station_init() {
             },
     };
 
-    strlcpy((char *) wifi_config.sta.ssid, EXAMPLE_ESP_WIFI_SSID, sizeof(EXAMPLE_ESP_WIFI_SSID));
-    strlcpy((char *) wifi_config.sta.password, EXAMPLE_ESP_WIFI_PASS, sizeof(EXAMPLE_ESP_WIFI_PASS));
+    strlcpy((char *) wifi_config.sta.ssid, ESP_WIFI_SSID, sizeof(ESP_WIFI_SSID));
+    strlcpy((char *) wifi_config.sta.password, ESP_WIFI_PASS, sizeof(ESP_WIFI_PASS));
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
@@ -151,7 +150,7 @@ void station_init() {
 
     esp_wifi_set_ps(WIFI_PS_NONE);
 
-    ESP_LOGI(TAG, "connect to ap SSID:%s password:%s", EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
+    ESP_LOGI(TAG, "connect to ap SSID:%s password:%s", ESP_WIFI_SSID, ESP_WIFI_PASS);
 }
 
 TaskHandle_t xHandle = NULL;
@@ -173,8 +172,8 @@ void config_print() {
     printf("IDF_VER: %s\n", IDF_VER);
     printf("-----------------------\n");
     printf("WIFI_CHANNEL: %d\n", WIFI_CHANNEL);
-    printf("ESP_WIFI_SSID: %s\n", CONFIG_ESP_WIFI_SSID);
-    printf("ESP_WIFI_PASSWORD: %s\n", CONFIG_ESP_WIFI_PASSWORD);
+    printf("ESP_WIFI_SSID: %s\n", ESP_WIFI_SSID);
+    printf("ESP_WIFI_PASSWORD: %s\n", ESP_WIFI_PASS);
     printf("PACKET_RATE: %i\n", CONFIG_PACKET_RATE);
     printf("SHOULD_COLLECT_CSI: %d\n", SHOULD_COLLECT_CSI);
     printf("SHOULD_COLLECT_ONLY_LLTF: %d\n", SHOULD_COLLECT_ONLY_LLTF);
@@ -190,6 +189,10 @@ extern "C" void app_main() {
     sd_init();
     station_init();
     csi_init((char *) "STA");
+
+#if !(SHOULD_COLLECT_CSI)
+    printf("CSI will not be collected. Check `idf.py menuconfig  # > ESP32 CSI Tool Config` to enable CSI");
+#endif
 
     xTaskCreatePinnedToCore(&vTask_socket_transmitter_sta_loop, "socket_transmitter_sta_loop",
                             10000, (void *) &is_wifi_connected, 100, &xHandle, 1);
