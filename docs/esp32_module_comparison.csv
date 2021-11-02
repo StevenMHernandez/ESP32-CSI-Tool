@@ -1,0 +1,4 @@
+Board Name,Version,Tested,SD card,LCD display,Speakers,Processor,Clock frequency,RAM,Memory,Wireless standard,Bluetooth,Frequency,Dimensions,Operating voltage,References
+TTGO T8,v1.7.1,No,Yes,No,No,Unknown,Unknown,4MB PSRAM,4MB,Unknown,Yes,Unknown,63.3mm x 26.8mm x 4.7mm,Unknown,http://www.lilygo.cn/prod_view.aspx?Id=983
+NodeMCU,v4,Yes,No,No,No,Tensilica LX6 Dual-Core,240 MHz,512KB SRAM,4MB,802.11 b/g/n,Yes,2.4 GHz,48mm x 26mm x 11.5mm,3.3V,https://joy-it.net/en/products/SBC-NodeMCU-ESP32
+TTGO TS,v1.2,Yes,Yes,Yes,Yes,Unknown,Unknown,Unknown,Unknown,Unknown,Yes,Unknown,Unknown,Unknown,https://github.com/LilyGO/TTGO-TS
