@@ -110,10 +110,6 @@ void softap_init() {
     }
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-    //ESP_IF_WIFI_AP works for esp-idf 4.0
-    //ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
-    //https://github.com/StevenMHernandez/ESP32-CSI-Tool/issues/37
-    //WIFI_IF_AP works for esp-idf 4.3
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
