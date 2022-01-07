@@ -18,8 +18,8 @@ In addition to these ESP32 specific projects, we also consider methods for analy
 
 ## Installation
 
-First, Install Espressif IoT Development Framework (ESP-IDF) by following their [step by step installation guide](https://docs.espressif.com/projects/esp-idf/en/v4.0/get-started/index.html).
-Notice, this project requires **version (v4.0) of ESP-IDF**.  
+First, Install Espressif IoT Development Framework (ESP-IDF) by following their [step by step installation guide](https://docs.espressif.com/projects/esp-idf/en/release-v4.3/esp32/get-started/index.html).
+Notice, this project requires **version (v4.3) of ESP-IDF**.  
 
 **Important:** It is important that you are able to successfully build and flash the example project from the esp-idf guide onto your own esp32.
 If you have issues building the example project on your hardware, **do not create an issue in this github repo**.
@@ -60,11 +60,12 @@ So for example, make sure when you change the Wi-Fi password in *Active CSI coll
 
 The following configurations are important for this project:
 
-3. `Serial flasher config > 'idf.py monitor' baud rate > Custom Baud Rate`
-4. `Serial flasher config > Custom baud rate value > 1552000` This allows more data to be transmitted on the Serial port
-5. `Component config > Common ESP32-related > UART console baud rate > 1552000`
-6. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
-5. `Component config > FreeRTOS > Tick rate (Hz) > 1000`
+1. `Serial flasher config > 'idf.py monitor' baud rate > Custom Baud Rate`
+2. `Serial flasher config > Custom baud rate value > 1552000` This allows more data to be transmitted on the Serial port
+3. `Component config > Common ESP32-related > Channel for console output > Custom UART`
+4. `Component config > Common ESP32-related > UART console baud rate > 1552000`
+5. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
+6. `Component config > FreeRTOS > Tick rate (Hz) > 1000`
 7. `ESP32 CSI Tool Config > ****` all options in this menu can be specified per your experiment requirements.
 
 **NOTE:** For some systems, baud rate `1552000` does not work. Good alternatives to try are `921600`, `1000000`, `1152000`, and `1500000`.  
