@@ -96,12 +96,14 @@ void softap_init() {
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+//    wifi_config_t wifi_config = {};
+    wifi_ap_config_t wifi_ap_config = {};
+    wifi_ap_config.channel = WIFI_CHANNEL;
+    wifi_ap_config.authmode = WIFI_AUTH_WPA_WPA2_PSK;
+    wifi_ap_config.max_connection = MAX_STA_CONN;
+
     wifi_config_t wifi_config = {
-            .ap = {
-                .channel = WIFI_CHANNEL,
-                .authmode = WIFI_AUTH_WPA_WPA2_PSK,
-                .max_connection = MAX_STA_CONN,
-            },
+            .ap = wifi_ap_config,
     };
 
     strlcpy((char *) wifi_config.ap.ssid, ESP_WIFI_SSID, sizeof(ESP_WIFI_SSID));
