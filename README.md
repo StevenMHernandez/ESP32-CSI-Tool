@@ -91,7 +91,11 @@ If your ESP32 has an SD card on board (such as the TTGO T8 V1.7 ESP32), the ESP3
 If the device does not have an SD card or you wish to collect the data directly from the Serial port on your computer, you can run the following command:
 
 ```
-idf.py monitor | grep "CSI_DATA" > my-experiment-file.csv 
+# macOS or Linux
+idf.py monitor | grep "CSI_DATA" > my-experiment-file.csv
+
+# Windows
+idf.py monitor | findstr "CSI_DATA" > my-experiment-file.csv 
 ```
 
 Because the clocks on the ESP32 are not synchronized with any real world time, it can be difficult to sync this data with other external data sources or sensors. 
