@@ -59,14 +59,10 @@ void socket_transmitter_sta_loop(bool (*is_wifi_connected)()) {
                 continue;
             }
 
-#ifdef CONFIG_PACKET_RATE
-            if(CONFIG_PACKET_RATE > 0) {
-                double wait_duration = (1000.0 / CONFIG_PACKET_RATE) - lag;
-                int w = floor(wait_duration);
-                vTaskDelay(w);
-                // ets_delay_us((wait_duration - w) * 1000);
-            } else
-                vTaskDelay(10);
+#if defined CONFIG_PACKET_RATE && (CONFIG_PACKET_RATE > 0)
+            double wait_duration = (1000.0 / CONFIG_PACKET_RATE) - lag;
+            int w = floor(wait_duration);
+            vTaskDelay(w);
 #else
             vTaskDelay(10); // This limits TX to approximately 100 per second.
 #endif
