@@ -2,17 +2,19 @@
 #define ESP32_CSI_CSI_COMPONENT_H
 
 #include "time_component.h"
+#include "base_converter.h"
 #include "math.h"
 #include <sstream>
 #include <iostream>
 
 char *project_type;
 
-#define CSI_RAW 1
+#define CSI_RAW 0
+#define CSI_RAW_ONLY 1
 #define CSI_AMPLITUDE 0
 #define CSI_PHASE 0
 
-#define CSI_TYPE CSI_RAW
+#define CSI_TYPE CSI_RAW_ONLY
 
 SemaphoreHandle_t mutex = xSemaphoreCreateMutex();
 
@@ -25,31 +27,36 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     sprintf(mac, "%02X:%02X:%02X:%02X:%02X:%02X", d.mac[0], d.mac[1], d.mac[2], d.mac[3], d.mac[4], d.mac[5]);
 
     ss << "CSI_DATA,"
-       << project_type << ","
-       << mac << ","
-       // https://github.com/espressif/esp-idf/blob/9d0ca60398481a44861542638cfdc1949bb6f312/components/esp_wifi/include/esp_wifi_types.h#L314
-       << d.rx_ctrl.rssi << ","
-       << d.rx_ctrl.rate << ","
-       << d.rx_ctrl.sig_mode << ","
-       << d.rx_ctrl.mcs << ","
-       << d.rx_ctrl.cwb << ","
-       << d.rx_ctrl.smoothing << ","
-       << d.rx_ctrl.not_sounding << ","
-       << d.rx_ctrl.aggregation << ","
-       << d.rx_ctrl.stbc << ","
-       << d.rx_ctrl.fec_coding << ","
-       << d.rx_ctrl.sgi << ","
-       << d.rx_ctrl.noise_floor << ","
-       << d.rx_ctrl.ampdu_cnt << ","
-       << d.rx_ctrl.channel << ","
-       << d.rx_ctrl.secondary_channel << ","
-       << d.rx_ctrl.timestamp << ","
-       << d.rx_ctrl.ant << ","
-       << d.rx_ctrl.sig_len << ","
-       << d.rx_ctrl.rx_state << ","
-       << real_time_set << ","
-       << get_steady_clock_timestamp() << ","
-       << data->len << ",[";
+       << project_type << ",";
+    // https://github.com/espressif/esp-idf/blob/9d0ca60398481a44861542638cfdc1949bb6f312/components/esp_wifi/include/esp_wifi_types.h#L314
+
+#if CSI_RAW_ONLY
+    ss << "[";
+#else
+    ss << mac << ","
+        << d.rx_ctrl.rssi << ","
+        << d.rx_ctrl.rate << ","
+        << d.rx_ctrl.sig_mode << ","
+        << d.rx_ctrl.mcs << ","
+        << d.rx_ctrl.cwb << ","
+        << d.rx_ctrl.smoothing << ","
+        << d.rx_ctrl.not_sounding << ","
+        << d.rx_ctrl.aggregation << ","
+        << d.rx_ctrl.stbc << ","
+        << d.rx_ctrl.fec_coding << ","
+        << d.rx_ctrl.sgi << ","
+        << d.rx_ctrl.noise_floor << ","
+        << d.rx_ctrl.ampdu_cnt << ","
+        << d.rx_ctrl.channel << ","
+        << d.rx_ctrl.secondary_channel << ","
+        << d.rx_ctrl.timestamp << ","
+        << d.rx_ctrl.ant << ","
+        << d.rx_ctrl.sig_len << ","
+        << d.rx_ctrl.rx_state << ","
+        << real_time_set << ","
+        << get_steady_clock_timestamp() << ","
+        << data->len << ",[";
+#endif
 
 #if CONFIG_SHOULD_COLLECT_ONLY_LLTF
     int data_len = 128;
@@ -57,11 +64,13 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     int data_len = data->len;
 #endif
 
-int8_t *my_ptr;
-#if CSI_RAW
+    int8_t *my_ptr;
+#if (CSI_RAW || CSI_RAW_ONLY)
     my_ptr = data->buf;
     for (int i = 0; i < data_len; i++) {
-        ss << (int) my_ptr[i] << " ";
+        char *h = encode_to_hex((int) my_ptr[i]);
+        ss << h[0] << h[1];
+        free(h);
     }
 #endif
 #if CSI_AMPLITUDE
@@ -85,7 +94,8 @@ int8_t *my_ptr;
 }
 
 void _print_csi_csv_header() {
-    char *header_str = (char *) "type,role,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,real_time_set,real_timestamp,len,CSI_DATA\n";
+    char *header_str = CSI_RAW_ONLY ? (char *) "type,role,CSI_DATA\n" :
+                       (char *) "type,role,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,real_time_set,real_timestamp,len,CSI_DATA\n";
     outprintf(header_str);
 }
 
