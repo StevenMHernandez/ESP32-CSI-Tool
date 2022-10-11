@@ -8,7 +8,7 @@ import collections
 perm_amp = collections.deque(maxlen=100)
 perm_phase = collections.deque(maxlen=100)
 #Set subcarrier to plot
-Subcarrier=44
+subcarrier=44
 
 
 # Create figure for plotting
@@ -20,7 +20,7 @@ count = 0
 #Plot definitions
 plt.xlabel("Time")
 plt.ylabel("Amplitude")
-plt.title(f"Amplitude plot of Subcarrier {Subcarrier}")
+plt.title(f"Amplitude plot of Subcarrier {subcarrier}")
 fig.canvas.draw()
 plt.show(block=False)
 process_line = True
@@ -35,7 +35,7 @@ def carrier_plot(amp):
     plt.show()
     df = np.asarray(amp,dtype=np.int32)
     # Can be changed to df[x] to plot sub-carrier x only (set color='r' also)
-    plt.plot(df[:,Subcarrier], color='r')
+    plt.plot(df[:,subcarrier], color='r')
     # TODO use blit instead of flush_events for more fastness
     # to flush the GUI events
     fig.canvas.flush_events()
