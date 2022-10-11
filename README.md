@@ -111,6 +111,18 @@ Once data has been collected, we now wish to run analysis and (most likely) appl
 Luckily, the output from the esp32 is a simple CSV file, thus we can pass the contents to any available CSV parser in our language of choice (Python, MATLAB, R, etc.). 
 The use of CSV was selected for its simplicity and small size when compared with the likes of XML or JSON.
 
+## Visualizing CSI Data
+
+If you wish to Visualize the incoming CSI data in a amplitude or phase format use the serial_plot_csi_live.py script. It uses various packages with need to be installed, these can be installed through pip or manually, numpy, collections sys and math come with a ESP32 install. The needed specifically for realtime plot are:
+
+Matplotlib for plotting
+TkAgg for backend GUI features.
+
+To run this use the following command. 
+
+idf.py monitor | python ./python_utils/serial_plot_csi_live.py
+
+
 ## Advanced:
 
 ### Setting Local Time
