@@ -2,44 +2,40 @@ import sys
 import matplotlib.pyplot as plt
 import math
 import numpy as np
+import collections
 
-perm_amp = []
-perm_phase = []
+#Que definition
+perm_amp = collections.deque(maxlen=100)
+perm_phase = collections.deque(maxlen=100)
+#Set subcarrier to plot
+Subcarrier=44
+
+
 # Create figure for plotting
 plt.ion()
 fig = plt.figure()
 ax = fig.add_subplot(111)
 count = 0
-plt.xlabel("X-axis")
-plt.ylabel("Y-axis")
-plt.title("Updating plot...")
+
+#Plot definitions
+plt.xlabel("Time")
+plt.ylabel("Amplitude")
+plt.title(f"Amplitude plot of Subcarrier {Subcarrier}")
 fig.canvas.draw()
 plt.show(block=False)
 process_line = True
+plt.xlim(0, 100)
+plt.rcParams["figure.figsize"] = [7.50, 3.50]
+plt.rcParams["figure.autolayout"] = True
 
 
 def carrier_plot(amp):
 
     #Adds xlims after 100 entries
-    if count > 100:
-        plt.xticks([], [])
-        plt.xlim()
-
-    else:
-        plt.xlim(0, 100)
-    plt.xlabel("Packet number/Time")
-    plt.ylabel("Amplitude")
-    plt.rcParams["figure.figsize"] = [7.50, 3.50]
-    plt.rcParams["figure.autolayout"] = True
-    plt.title("Line graph")
     plt.show()
-
-    df = np.asarray(amp)
-    # print(df.shape)
+    df = np.asarray(amp,dtype=np.int32)
     # Can be changed to df[x] to plot sub-carrier x only (set color='r' also)
-    plt.plot(df[:, 44], color='r')
-    # fig.canvas.draw()
-
+    plt.plot(df[:,Subcarrier], color='r')
     # TODO use blit instead of flush_events for more fastness
     # to flush the GUI events
     fig.canvas.flush_events()
@@ -80,16 +76,13 @@ def process(res):
 
 while True:
     line = sys.stdin.readline()
-    # if process_line:    # Only process every other line?
+    # if process_line:    # Only process every other line
     if "CSI_DATA" in line:
         count += 1
         process(line)
         print("Number of lines read: " + str(count))
-
         if count > 5:
-            if len(perm_amp) < 100:
-                carrier_plot(perm_amp)
-            else:
-                carrier_plot(perm_amp[len(perm_amp)-100:len(perm_amp)])
-                # carrier_plot(perm_amp)
-    # process_line = not process_line
+            carrier_plot(perm_amp)
+
+
+
