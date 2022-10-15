@@ -56,6 +56,15 @@ menu "ESP32 CSI Tool Config"
             We can reduce the amount of data passed over serial by not printing the metadata.
             However some metadata may be necessary depending on your use case.
 
+    config PRINT_CSI_AS_HEX
+        bool "(Advanced users only) Should CSI data be printed in Hexadecimal format?"
+        default "n"
+        help
+            Sending data through serial (to a computer) can take time and buffer space.
+            By setting this variable to true, we can reduce the number of characters printed over serial by:
+            (1) removing delimiters
+            (2) reduce number of character required to exactly 2 for each raw csi value.
+
     config SEND_CSI_TO_SERIAL
         depends on SHOULD_COLLECT_CSI
         bool "Send CSI data to Serial"

@@ -16,8 +16,12 @@ char *project_type;
 #ifndef CONFIG_PRINT_METADATA
 #define CONFIG_PRINT_METADATA 1
 #endif
-
 #define PRINT_METADATA CONFIG_PRINT_METADATA
+
+#ifndef CONFIG_PRINT_CSI_AS_HEX
+#define CONFIG_PRINT_CSI_AS_HEX 0
+#endif
+#define PRINT_CSI_AS_HEX CONFIG_PRINT_CSI_AS_HEX
 
 void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     std::stringstream ss;
@@ -28,9 +32,9 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
 
     ss << "CSI_DATA,"
        << project_type << ",";
-    // https://github.com/espressif/esp-idf/blob/9d0ca60398481a44861542638cfdc1949bb6f312/components/esp_wifi/include/esp_wifi_types.h#L314
 
 #if PRINT_METADATA
+    // https://github.com/espressif/esp-idf/blob/9d0ca60398481a44861542638cfdc1949bb6f312/components/esp_wifi/include/esp_wifi_types.h#L314
     ss << mac << ","
         << d.rx_ctrl.rssi << ","
         << d.rx_ctrl.rate << ","
@@ -68,9 +72,13 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
 #if CSI_RAW
     my_ptr = data->buf;
     for (int i = 0; i < data_len; i++) {
+#if PRINT_CSI_AS_HEX
         char *h = encode_to_hex((int) my_ptr[i]);
         ss << h[0] << h[1];
         free(h);
+#else
+        ss << (int) my_ptr[i] << " ";
+#endif
     }
 #endif
 #if CSI_AMPLITUDE
