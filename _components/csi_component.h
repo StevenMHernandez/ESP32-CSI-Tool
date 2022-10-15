@@ -9,12 +9,15 @@
 
 char *project_type;
 
-#define CSI_RAW 0
-#define CSI_RAW_ONLY 1
+#define CSI_RAW 1
 #define CSI_AMPLITUDE 0
 #define CSI_PHASE 0
 
-#define CSI_TYPE CSI_RAW_ONLY
+#ifndef CONFIG_PRINT_METADATA
+#define CONFIG_PRINT_METADATA 1
+#endif
+
+#define PRINT_METADATA CONFIG_PRINT_METADATA
 
 void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     std::stringstream ss;
@@ -27,9 +30,7 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
        << project_type << ",";
     // https://github.com/espressif/esp-idf/blob/9d0ca60398481a44861542638cfdc1949bb6f312/components/esp_wifi/include/esp_wifi_types.h#L314
 
-#if CSI_RAW_ONLY
-    ss << "[";
-#else
+#if PRINT_METADATA
     ss << mac << ","
         << d.rx_ctrl.rssi << ","
         << d.rx_ctrl.rate << ","
@@ -53,6 +54,8 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
         << real_time_set << ","
         << get_steady_clock_timestamp() << ","
         << data->len << ",[";
+#else
+    ss << "[";
 #endif
 
 #if CONFIG_SHOULD_COLLECT_ONLY_LLTF
@@ -62,7 +65,7 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
 #endif
 
     int8_t *my_ptr;
-#if (CSI_RAW || CSI_RAW_ONLY)
+#if CSI_RAW
     my_ptr = data->buf;
     for (int i = 0; i < data_len; i++) {
         char *h = encode_to_hex((int) my_ptr[i]);
@@ -88,8 +91,11 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
 }
 
 void _print_csi_csv_header() {
-    char *header_str = CSI_RAW_ONLY ? (char *) "type,role,CSI_DATA\n" :
-                       (char *) "type,role,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,real_time_set,real_timestamp,len,CSI_DATA\n";
+#if PRINT_METADATA
+    char *header_str = (char *) "type,role,mac,rssi,rate,sig_mode,mcs,bandwidth,smoothing,not_sounding,aggregation,stbc,fec_coding,sgi,noise_floor,ampdu_cnt,channel,secondary_channel,local_timestamp,ant,sig_len,rx_state,real_time_set,real_timestamp,len,CSI_DATA\n";
+#else
+    char *header_str = (char *) "type,role,CSI_DATA\n";
+#endif
     outprintf(header_str);
 }
 

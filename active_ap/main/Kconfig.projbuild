@@ -40,6 +40,14 @@ menu "ESP32 CSI Tool Config"
             [Advanced Users]: I cannot always help with these advanced issues,
             but if you have ideas on improvements to these issues please share!
 
+    config PRINT_METADATA
+        bool "Should CSI metadata be printed?"
+        default "y"
+        help
+            Sending data through serial (to a computer) can take time and buffer space.
+            We can reduce the amount of data passed over serial by not printing the metadata.
+            However some metadata may be necessary depending on your use case.
+
     config SEND_CSI_TO_SERIAL
         depends on SHOULD_COLLECT_CSI
         bool "Send CSI data to Serial"
