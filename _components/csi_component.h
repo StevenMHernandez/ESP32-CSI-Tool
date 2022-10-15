@@ -16,10 +16,7 @@ char *project_type;
 
 #define CSI_TYPE CSI_RAW_ONLY
 
-SemaphoreHandle_t mutex = xSemaphoreCreateMutex();
-
 void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
-    xSemaphoreTake(mutex, portMAX_DELAY);
     std::stringstream ss;
 
     wifi_csi_info_t d = data[0];
@@ -88,9 +85,6 @@ void _wifi_csi_cb(void *ctx, wifi_csi_info_t *data) {
     ss << "]\n";
 
     printf(ss.str().c_str());
-    fflush(stdout);
-    vTaskDelay(0);
-    xSemaphoreGive(mutex);
 }
 
 void _print_csi_csv_header() {
