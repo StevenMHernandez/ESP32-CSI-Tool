@@ -102,7 +102,12 @@ Because the clocks on the ESP32 are not synchronized with any real world time, i
 To help with this, we can pass output first through a python script which appends a timestamp from your computer.
 
 ```
+# macOS or Linux
 idf.py monitor | python ./python_utils/serial_append_time.py > my-experiment-file.csv
+
+# Windows
+idf.py monitor | python ../python_utils/serial_append_time.py > my-experiment-file.csv
+
 ```
 
 ## Analysing CSI Data
