@@ -4,46 +4,37 @@ import math
 import numpy as np
 import collections
 
-#Que definition
+# Set subcarrier to plot
+subcarrier = 44
+
+# Deque definition
 perm_amp = collections.deque(maxlen=100)
 perm_phase = collections.deque(maxlen=100)
-#Set subcarrier to plot
-subcarrier=44
-
 
 # Create figure for plotting
 plt.ion()
 fig = plt.figure()
 ax = fig.add_subplot(111)
-count = 0
-
-#Plot definitions
-plt.xlabel("Time")
-plt.ylabel("Amplitude")
-plt.title(f"Amplitude plot of Subcarrier {subcarrier}")
 fig.canvas.draw()
 plt.show(block=False)
-process_line = True
-plt.xlim(0, 100)
-plt.rcParams["figure.figsize"] = [7.50, 3.50]
-plt.rcParams["figure.autolayout"] = True
 
 
 def carrier_plot(amp):
-
-    #Adds xlims after 100 entries
-    plt.show()
-    df = np.asarray(amp,dtype=np.int32)
+    plt.clf()
+    df = np.asarray(amp, dtype=np.int32)
     # Can be changed to df[x] to plot sub-carrier x only (set color='r' also)
-    plt.plot(df[:,subcarrier], color='r')
+    plt.plot(range(100-len(amp), 100), df[:, subcarrier], color='r')
+    plt.xlabel("Time")
+    plt.ylabel("Amplitude")
+    plt.xlim(0, 100)
+    plt.title(f"Amplitude plot of Subcarrier {subcarrier}")
     # TODO use blit instead of flush_events for more fastness
     # to flush the GUI events
     fig.canvas.flush_events()
-    plt.clf()
+    plt.show()
 
 
 def process(res):
-
     # Parser
     all_data = res.split(',')
     csi_data = all_data[25].split(" ")
@@ -73,16 +64,12 @@ def process(res):
         perm_phase.append(phases)
         perm_amp.append(amplitudes)
 
-
+count = 0
 while True:
+    plt.pause(1e-9)
     line = sys.stdin.readline()
-    # if process_line:    # Only process every other line
     if "CSI_DATA" in line:
         count += 1
         process(line)
         print("Number of lines read: " + str(count))
-        if count > 5:
-            carrier_plot(perm_amp)
-
-
-
+        carrier_plot(perm_amp)

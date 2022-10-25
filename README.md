@@ -102,10 +102,6 @@ Because the clocks on the ESP32 are not synchronized with any real world time, i
 To help with this, we can pass output first through a python script which appends a timestamp from your computer.
 
 ```
-# macOS or Linux
-idf.py monitor | python ./python_utils/serial_append_time.py > my-experiment-file.csv
-
-# Windows
 idf.py monitor | python ../python_utils/serial_append_time.py > my-experiment-file.csv
 
 ```
@@ -118,15 +114,20 @@ The use of CSV was selected for its simplicity and small size when compared with
 
 ## Visualizing CSI Data
 
-If you wish to Visualize the incoming CSI data in a amplitude or phase format use the serial_plot_csi_live.py script. It uses various packages with need to be installed, these can be installed through pip or manually, numpy, collections sys and math come with a ESP32 install. The needed specifically for realtime plot are:
+If you wish to visualize the incoming CSI amplitude data in real-time, use the `./python_utils/serial_plot_csi_live.py` script. 
+First, install the python plotting dependencies.
 
-Matplotlib for plotting
-TkAgg for backend GUI features.
+```
+pip install numpy matplotlib
+```
 
-To run this use the following command. 
+Then, to visualize the CSI amplitude, use the following command. 
 
-idf.py monitor | python ./python_utils/serial_plot_csi_live.py
+```
+idf.py monitor | python ../python_utils/serial_plot_csi_live.py
+```
 
+Currently this script only visualizes subcarrier #44. You can change this by editing the code directly.
 
 ## Advanced:
 
