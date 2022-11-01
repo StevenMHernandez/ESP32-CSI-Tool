@@ -19,6 +19,15 @@ fig.canvas.draw()
 plt.show(block=False)
 
 
+def readline():
+    while True:
+        try:
+            sys.stdin.buffer.flush()
+            return sys.stdin.buffer.readline().decode('utf-8').replace("\n", "")
+        except:
+            pass  # might not be a utf-8 string!
+
+
 def carrier_plot(amp):
     plt.clf()
     df = np.asarray(amp, dtype=np.int32)
@@ -66,8 +75,7 @@ def process(res):
 
 count = 0
 while True:
-    plt.pause(1e-9)
-    line = sys.stdin.readline()
+    line = readline()
     if "CSI_DATA" in line:
         count += 1
         process(line)
