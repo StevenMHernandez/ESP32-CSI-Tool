@@ -3,13 +3,22 @@ import matplotlib.pyplot as plt
 import math
 import numpy as np
 import collections
+from wait_timer import WaitTimer
 
 # Set subcarrier to plot
 subcarrier = 44
 
+# Wait Timers. Change these values to increase or decrease the rate of `print_stats` and `render_plot`.
+print_stats_wait_timer = WaitTimer(1.0)
+render_plot_wait_timer = WaitTimer(0.2)
+
 # Deque definition
 perm_amp = collections.deque(maxlen=100)
 perm_phase = collections.deque(maxlen=100)
+
+# Variables to store CSI statistics
+packet_count = 0
+total_packet_counts = 0
 
 # Create figure for plotting
 plt.ion()
@@ -32,7 +41,7 @@ def carrier_plot(amp):
     plt.clf()
     df = np.asarray(amp, dtype=np.int32)
     # Can be changed to df[x] to plot sub-carrier x only (set color='r' also)
-    plt.plot(range(100-len(amp), 100), df[:, subcarrier], color='r')
+    plt.plot(range(100 - len(amp), 100), df[:, subcarrier], color='r')
     plt.xlabel("Time")
     plt.ylabel("Amplitude")
     plt.xlim(0, 100)
@@ -73,11 +82,19 @@ def process(res):
         perm_phase.append(phases)
         perm_amp.append(amplitudes)
 
-count = 0
+
 while True:
     line = readline()
     if "CSI_DATA" in line:
-        count += 1
         process(line)
-        print("Number of lines read: " + str(count))
-        carrier_plot(perm_amp)
+        packet_count += 1
+        total_packet_counts += 1
+
+        if print_stats_wait_timer.check():
+            print_stats_wait_timer.update()
+            print("Packet Count:", packet_count, "per second.", "Total Count:", total_packet_counts)
+            packet_count = 0
+
+        if render_plot_wait_timer.check() and len(perm_amp) > 2:
+            render_plot_wait_timer.update()
+            carrier_plot(perm_amp)
