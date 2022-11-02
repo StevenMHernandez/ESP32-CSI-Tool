@@ -102,7 +102,8 @@ Because the clocks on the ESP32 are not synchronized with any real world time, i
 To help with this, we can pass output first through a python script which appends a timestamp from your computer.
 
 ```
-idf.py monitor | python ./python_utils/serial_append_time.py > my-experiment-file.csv
+idf.py monitor | python ../python_utils/serial_append_time.py > my-experiment-file.csv
+
 ```
 
 ## Analysing CSI Data
@@ -110,6 +111,23 @@ idf.py monitor | python ./python_utils/serial_append_time.py > my-experiment-fil
 Once data has been collected, we now wish to run analysis and (most likely) apply deep learning algorithms on the collected data. 
 Luckily, the output from the esp32 is a simple CSV file, thus we can pass the contents to any available CSV parser in our language of choice (Python, MATLAB, R, etc.). 
 The use of CSV was selected for its simplicity and small size when compared with the likes of XML or JSON.
+
+## Visualizing CSI Data
+
+If you wish to visualize the incoming CSI amplitude data in real-time, use the `./python_utils/serial_plot_csi_live.py` script. 
+First, install the python plotting dependencies.
+
+```
+pip install numpy matplotlib
+```
+
+Then, to visualize the CSI amplitude, use the following command. 
+
+```
+idf.py monitor | python ../python_utils/serial_plot_csi_live.py
+```
+
+Currently this script only visualizes subcarrier #44. You can change this by editing the code directly.
 
 ## Advanced:
 
