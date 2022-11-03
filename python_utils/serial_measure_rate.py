@@ -1,5 +1,6 @@
 import sys
 import time
+from read_stdin import readline, print_until_first_csi_line
 
 #
 # Run this utility script to view the rate at which CSI data is collected, aggregated per second.
@@ -15,25 +16,14 @@ total_packet_counts = 0
 number_of_intervals = -1
 packet_counts_list = []
 
-#
-# Print Flash/Debug information up until we see the first CSI packet
-#
-print("Printing Flash information")
-while True:
-    line = sys.stdin.readline()
-
-    if "CSI_DATA" not in line:
-        if line != "":
-            print(line)
-    else:
-        break
+print_until_first_csi_line()
 
 #
 # Start Evaluation
 #
 print("Start Evaluation")
 while True:
-    line = sys.stdin.readline()
+    line = readline()
     if "CSI_DATA" in line:
         if time.time() - interval_start_time > 1.0:
             number_of_intervals += 1

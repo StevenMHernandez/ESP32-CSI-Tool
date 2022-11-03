@@ -1,5 +1,6 @@
 import sys
 import time
+from read_stdin import readline, print_until_first_csi_line
 
 #
 # Run this utility to append the current real timestamp.
@@ -8,22 +9,13 @@ import time
 # `idf.py monitor | python ../python_utils/serial_append_timestamp.py`
 #
 
-#
-# Append the first line with ",timestamp"
-#
-while True:
-    line = sys.stdin.readline()
-
-    if "CSI_DATA" in line:
-        l = line.rstrip()
-        print(line.rstrip() + ",timestamp")
-        break
+print_until_first_csi_line()
 
 #
 # Append subsequent lines with the current timestamp
 #
 while True:
-    line = sys.stdin.readline()
+    line = readline()
 
     if "CSI_DATA" in line:
-        print(line.rstrip() + "," + str(time.time()))
+        print(line.strip() + "," + str(time.time()))

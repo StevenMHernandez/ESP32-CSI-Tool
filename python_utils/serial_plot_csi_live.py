@@ -4,6 +4,7 @@ import math
 import numpy as np
 import collections
 from wait_timer import WaitTimer
+from read_stdin import readline, print_until_first_csi_line
 
 # Set subcarrier to plot
 subcarrier = 44
@@ -26,15 +27,6 @@ fig = plt.figure()
 ax = fig.add_subplot(111)
 fig.canvas.draw()
 plt.show(block=False)
-
-
-def readline():
-    while True:
-        try:
-            sys.stdin.buffer.flush()
-            return sys.stdin.buffer.readline().decode('utf-8').replace("\n", "")
-        except:
-            pass  # might not be a utf-8 string!
 
 
 def carrier_plot(amp):
@@ -82,6 +74,7 @@ def process(res):
         perm_phase.append(phases)
         perm_amp.append(amplitudes)
 
+print_until_first_csi_line()
 
 while True:
     line = readline()
