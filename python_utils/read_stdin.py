@@ -13,16 +13,34 @@ def readline():
             pass  # might not be a utf-8 string!
 
 
-def print_until_first_csi_line():
+def process_until_first_csi_line(should_print):
     """
-    Prints initial serial output lines (i.e. flash/debug information) until the first CSI line is found.
+    Processes initial serial output lines (i.e. flash/debug information) until the first CSI line is found.
+
+    If should_print: then we print this initial serial lines.
+    Otherwise: then the initial serial lines are simply flushed.
     """
-    print("Printing Flash information")
+    if should_print:
+        print("Printing Flash information")
     while True:
         line = readline()
 
         if "CSI_DATA" not in line:
-            if line != "":
+            if line != "" and should_print:
                 print(line)
         else:
             break
+
+
+def ignore_until_first_csi_line():
+    """
+    Ignores initial serial output lines (i.e. flash/debug information) until the first CSI line is found.
+    """
+    process_until_first_csi_line(should_print=False)
+
+
+def print_until_first_csi_line():
+    """
+    Prints initial serial output lines (i.e. flash/debug information) until the first CSI line is found.
+    """
+    process_until_first_csi_line(should_print=True)

@@ -1,6 +1,5 @@
-import sys
 import time
-from read_stdin import readline, print_until_first_csi_line
+from read_stdin import readline, ignore_until_first_csi_line
 
 #
 # Run this utility to append the current real timestamp.
@@ -9,7 +8,7 @@ from read_stdin import readline, print_until_first_csi_line
 # `idf.py monitor | python ../python_utils/serial_append_timestamp.py`
 #
 
-print_until_first_csi_line()
+ignore_until_first_csi_line()
 
 #
 # Append subsequent lines with the current timestamp
