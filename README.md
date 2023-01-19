@@ -2,6 +2,10 @@
 
 [ESP32 CSI Tool Website](https://stevenmhernandez.github.io/ESP32-CSI-Tool/)
 
+> <strong>Submit a manuscript to our workshop:</strong>
+<em>"<a href="https://ebulutvcu.github.io/WiSense23">IEEE Workshop on Device Free Wireless Sensing (WiSense’23)</a>",</em>
+co-located with IEEE WoWMoM 2023, Boston, MA.
+
 The purpose of this project is to allow for the collection of Channel State Information (CSI) from the ESP32 Wi-Fi enabled microcontroller. 
 By collecting this data rich signal source, we can use this information for tasks such as Wi-Fi Sensing and Device-free Localization directly from the small, self contained ESP32 microcontroller.  
 
