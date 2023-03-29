@@ -2,17 +2,13 @@
 
 [ESP32 CSI Tool Website](https://stevenmhernandez.github.io/ESP32-CSI-Tool/)
 
-> <strong>Submit a manuscript to our workshop:</strong>
-<em>"<a href="https://ebulutvcu.github.io/WiSense23">IEEE Workshop on Device Free Wireless Sensing (WiSense’23)</a>",</em>
-co-located with IEEE WoWMoM 2023, Boston, MA.
-
 The purpose of this project is to allow for the collection of Channel State Information (CSI) from the ESP32 Wi-Fi enabled microcontroller. 
 By collecting this data rich signal source, we can use this information for tasks such as Wi-Fi Sensing and Device-free Localization directly from the small, self contained ESP32 microcontroller.  
 
 The following projects can be found in this repository:
 
-* `./active_sta` - *Active CSI collection (Station)* - Connects to some Access Point (AP) (Router or another ESP32) and sends packet requests (thus receiving CSI packet responses). 
-* `./active_ap` - *Active CSI collection (AP)* - AP which can be connected to by devices (ESP32, see previous).
+* `./active_sta` - *Active CSI collection (Station)* - Connects to some Access Point (AP) (Router or another ESP32) and sends packet requests. (Typically used as CSI-TX) 
+* `./active_ap` - *Active CSI collection (AP)* - AP which can be connected to by devices (ESP32, see previous). (Typically used as CSI-RX)
 * `./passive` - *Passive CSI collection* - Passively listens for CSI frames on a given channel (default: channel 3).
 
 Each project automatically sends the collected CSI data to both serial port and SD card (if present). 
@@ -41,11 +37,11 @@ One using the *Active CSI collection (Station)* codebase and the other using the
 To begin working with a given codebase, open a terminal and change into the respective directory.
 
 ```
-cd ./active_sta # For Active Station
+cd ./active_sta # For Active Station (Typically used as the CSI-TX)
 # OR
-cd ./active_ap # For Active Access Point
+cd ./active_ap # For Active Access Point (Typically used as the CSI-RX)
 # OR
-cd ./passive # For Passive CSI collection
+cd ./passive # For Passive CSI collection (Used as a passive-RX)
 ```
 
 We can now begin configuring and flashing your ESP32.
@@ -65,14 +61,14 @@ So for example, make sure when you change the Wi-Fi password in *Active CSI coll
 The following configurations are important for this project:
 
 1. `Serial flasher config > 'idf.py monitor' baud rate > Custom Baud Rate`
-2. `Serial flasher config > Custom baud rate value > 1552000` This allows more data to be transmitted on the Serial port
+2. `Serial flasher config > Custom baud rate value > 921600` This allows more data to be transmitted on the Serial port
 3. `Component config > Common ESP32-related > Channel for console output > Custom UART`
-4. `Component config > Common ESP32-related > UART console baud rate > 1552000`
+4. `Component config > Common ESP32-related > UART console baud rate > 921600`
 5. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
 6. `Component config > FreeRTOS > Tick rate (Hz) > 1000`
 7. `ESP32 CSI Tool Config > ****` all options in this menu can be specified per your experiment requirements.
 
-**NOTE:** For some systems, baud rate `1552000` does not work. Good alternatives to try are `921600`, `1000000`, `1152000`, and `1500000`.  
+**NOTE:** For some systems, other baud rates may be required. Good options to try are `921600`, `1000000`, `1152000`, `1500000`, and `1552000`.  
 **The higher baud rate the better! Baud rate is extremely important to achieve high sampling rates without lag!**  
 If you have a problem, please leave any relevant information such as operating system, esp-idf version, list of all baud rates work and baud rates that do not work etc in [issue #5](https://github.com/StevenMHernandez/ESP32-CSI-Tool/issues/5). 
 
