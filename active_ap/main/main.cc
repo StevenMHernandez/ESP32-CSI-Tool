@@ -20,7 +20,6 @@
 #include "../../_components/input_component.h"
 #include "../../_components/sockets_component.h"
 
-
  /* Avron Added */
 #ifndef MAC2STR
 #define MAC2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5]
