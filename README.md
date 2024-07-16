@@ -19,7 +19,7 @@ In addition to these ESP32 specific projects, we also consider methods for analy
 ## Installation
 
 First, Install Espressif IoT Development Framework (ESP-IDF) by following their [step by step installation guide](https://docs.espressif.com/projects/esp-idf/en/release-v4.3/esp32/get-started/index.html).
-Notice, this project requires **version (v4.3) of ESP-IDF**.  
+Notice, this project requires **version (v4.3) of ESP-IDF**. It is also compatible with v4.4.
 
 **Important:** It is important that you are able to successfully build and flash the example project from the esp-idf guide onto your own esp32.
 If you have issues building the example project on your hardware, **do not create an issue in this github repo**.
@@ -62,11 +62,13 @@ The following configurations are important for this project:
 
 1. `Serial flasher config > 'idf.py monitor' baud rate > Custom Baud Rate`
 2. `Serial flasher config > Custom baud rate value > 921600` This allows more data to be transmitted on the Serial port
-3. `Component config > Common ESP32-related > Channel for console output > Custom UART`
-4. `Component config > Common ESP32-related > UART console baud rate > 921600`
-5. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
-6. `Component config > FreeRTOS > Tick rate (Hz) > 1000`
-7. `ESP32 CSI Tool Config > ****` all options in this menu can be specified per your experiment requirements.
+3. `Component config > Common ESP32-related > Channel for console output > Custom UART` <br/>
+   For v4.4, this is `Component config > ESP System Settings > Channel for console output > Custom UART`
+5. `Component config > Common ESP32-related > UART console baud rate > 921600` <br/>
+   For v4.4, this is `Component config > ESP System Settings > UART console baud rate > 921600`
+7. `Component config > Wi-Fi > WiFi CSI(Channel State Information)` (Press space to select)
+8. `Component config > FreeRTOS > Tick rate (Hz) > 1000`
+9. `ESP32 CSI Tool Config > ****` all options in this menu can be specified per your experiment requirements.
 
 **NOTE:** For some systems, other baud rates may be required. Good options to try are `921600`, `1000000`, `1152000`, `1500000`, and `1552000`.  
 **The higher baud rate the better! Baud rate is extremely important to achieve high sampling rates without lag!**  
